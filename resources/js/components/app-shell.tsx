@@ -1,5 +1,6 @@
-import { SidebarProvider } from '@/components/ui/sidebar';
 import { useState } from 'react';
+
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 interface AppShellProps {
     children: React.ReactNode;
@@ -22,7 +23,7 @@ export function AppShell({ children, variant = 'header' }: AppShellProps) {
     }
 
     return (
-        <SidebarProvider defaultOpen={isOpen} open={isOpen} onOpenChange={handleSidebarChange}>
+        <SidebarProvider defaultOpen={isOpen} onOpenChange={handleSidebarChange} open={isOpen}>
             {children}
         </SidebarProvider>
     );

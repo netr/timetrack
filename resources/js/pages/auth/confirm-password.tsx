@@ -24,8 +24,8 @@ export default function ConfirmPassword() {
 
     return (
         <AuthLayout
-            title="Confirm your password"
             description="This is a secure area of the application. Please confirm your password before continuing."
+            title="Confirm your password"
         >
             <Head title="Confirm password" />
 
@@ -34,14 +34,14 @@ export default function ConfirmPassword() {
                     <div className="grid gap-2">
                         <Label htmlFor="password">Password</Label>
                         <Input
-                            id="password"
-                            type="password"
-                            name="password"
-                            placeholder="Password"
                             autoComplete="current-password"
-                            value={data.password}
                             autoFocus
+                            id="password"
+                            name="password"
                             onChange={(e) => setData('password', e.target.value)}
+                            placeholder="Password"
+                            type="password"
+                            value={data.password}
                         />
 
                         <InputError message={errors.password} />

@@ -22,7 +22,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
     };
 
     return (
-        <AuthLayout title="Forgot password" description="Enter your email to receive a password reset link">
+        <AuthLayout description="Enter your email to receive a password reset link" title="Forgot password">
             <Head title="Forgot password" />
 
             {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
@@ -32,14 +32,14 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     <div className="grid gap-2">
                         <Label htmlFor="email">Email address</Label>
                         <Input
-                            id="email"
-                            type="email"
-                            name="email"
                             autoComplete="off"
-                            value={data.email}
                             autoFocus
+                            id="email"
+                            name="email"
                             onChange={(e) => setData('email', e.target.value)}
                             placeholder="email@example.com"
+                            type="email"
+                            value={data.email}
                         />
 
                         <InputError message={errors.email} />
