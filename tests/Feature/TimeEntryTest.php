@@ -72,7 +72,7 @@ describe('authenticated users', function () {
         $timeEntry = TimeEntry::factory()->for($task)->create();
 
         $endTime = now()->toDateTimeString();
-        
+
         $this->json('PUT', "/time-entries/{$timeEntry->id}", [
             'end_time' => $endTime,
             'title' => 'Test',
@@ -90,6 +90,59 @@ describe('authenticated users', function () {
             'title' => 'Test',
             'description' => 'Test',
             'category_id' => $task->category_id,
+        ]);
+    });
+
+    it('user can only update their own time entries', function () {
+        $task = Task::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $timeEntry = TimeEntry::factory()->for($task)->create();
+
+        $anotherUser = User::factory()->create();
+
+        $this->actingAs($anotherUser);
+
+        $this->json('PUT', "/time-entries/{$timeEntry->id}", [
+            'end_time' => now()->toDateTimeString(),
+        ])->assertStatus(403);
+
+        $this->assertDatabaseMissing('time_entries', [
+            'id' => $timeEntry->id,
+            'end_time' => now()->toDateTimeString(),
+        ]);
+    });
+
+    it('can delete a time entry', function () {
+        $task = Task::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $timeEntry = TimeEntry::factory()->for($task)->create();
+
+        $this->json('DELETE', "/time-entries/{$timeEntry->id}");
+
+        $this->assertDatabaseMissing('time_entries', [
+            'id' => $timeEntry->id,
+        ]);
+    });
+
+    it('user can only delete their own time entries', function () {
+        $task = Task::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $timeEntry = TimeEntry::factory()->for($task)->create();
+
+        $anotherUser = User::factory()->create();
+
+        $this->actingAs($anotherUser);
+
+        $this->json('DELETE', "/time-entries/{$timeEntry->id}")->assertStatus(403);
+
+        $this->assertDatabaseHas('time_entries', [
+            'id' => $timeEntry->id,
         ]);
     });
 });

@@ -3,17 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\TimeEntry;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class TimeEntryController extends Controller
 {
-    public function index()
+    public function index(): \Inertia\Response
     {
         return Inertia::render('time-entries/index');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $request->validate([
             'task_id' => 'required|exists:tasks,id',
@@ -29,13 +30,13 @@ class TimeEntryController extends Controller
                 'end_time' => $request->end_time,
             ]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Time entry creation failed');
+            return response()->json(['message' => 'Time entry creation failed'], 500);
         }
 
-        return redirect()->back()->with('success', 'Time entry created successfully');
+        return response()->json(['message' => 'Time entry created successfully'], 201);
     }
 
-    public function update(Request $request, TimeEntry $timeEntry)
+    public function update(Request $request, TimeEntry $timeEntry): JsonResponse
     {
         if ($request->user()->cannot('update', $timeEntry)) {
             return response()->json(['message' => 'You are not authorized to update this time entry'], 403);
@@ -58,6 +59,17 @@ class TimeEntryController extends Controller
             'category_id' => $request->category_id,
         ]);
 
-        return redirect()->back()->with('success', 'Time entry updated successfully');
+        return response()->json(['message' => 'Time entry updated successfully'], 200);
+    }
+
+    public function destroy(Request $request, TimeEntry $timeEntry): JsonResponse
+    {
+        if ($request->user()->cannot('delete', $timeEntry)) {
+            return response()->json(['message' => 'You are not authorized to delete this time entry'], 403);
+        }
+
+        $timeEntry->delete();
+
+        return response()->json(['message' => 'Time entry deleted successfully']);
     }
 }

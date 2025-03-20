@@ -17,6 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [TimeEntryController::class, 'index'])->name('time-entries.index');
         Route::post('/', [TimeEntryController::class, 'store'])->name('time-entries.store');
         Route::put('/{timeEntry}', [TimeEntryController::class, 'update'])->name('time-entries.update');
+        Route::delete('/{timeEntry}', [TimeEntryController::class, 'destroy'])->name('time-entries.destroy');
     });
 });
 
