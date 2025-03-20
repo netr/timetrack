@@ -16,6 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::group(['prefix' => 'time-entries'], function () {
         Route::get('/', [TimeEntryController::class, 'index'])->name('time-entries.index');
         Route::post('/', [TimeEntryController::class, 'store'])->name('time-entries.store');
+        Route::put('/{timeEntry}', [TimeEntryController::class, 'update'])->name('time-entries.update');
     });
 });
 

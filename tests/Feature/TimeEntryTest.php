@@ -1,8 +1,9 @@
 <?php
 
 use App\Models\Task;
-use App\Models\User;
 use App\Models\TimeEntry;
+use App\Models\User;
+
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('guests are redirected to the login page', function () {
@@ -16,6 +17,8 @@ describe('authenticated users', function () {
     });
 
     it('can visit the time entries page', function () {
+        $user = User::factory()->create();
+        $this->actingAs($user);
         $this->get('/time-entries')->assertOk();
     });
 
@@ -62,19 +65,31 @@ describe('authenticated users', function () {
     });
 
     it('can update an end time', function () {
-        $timeEntry = TimeEntry::factory()->create([
+        $task = Task::factory()->create([
             'user_id' => $this->user->id,
         ]);
 
-        $endTime = now()->toDateTimeString();
+        $timeEntry = TimeEntry::factory()->for($task)->create();
 
+        $endTime = now()->toDateTimeString();
+        
         $this->json('PUT', "/time-entries/{$timeEntry->id}", [
             'end_time' => $endTime,
+            'title' => 'Test',
+            'description' => 'Test',
+            'category_id' => $task->category_id,
         ]);
 
         $this->assertDatabaseHas('time_entries', [
             'id' => $timeEntry->id,
             'end_time' => $endTime,
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => $task->id,
+            'title' => 'Test',
+            'description' => 'Test',
+            'category_id' => $task->category_id,
         ]);
     });
 });

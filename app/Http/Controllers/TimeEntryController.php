@@ -34,4 +34,30 @@ class TimeEntryController extends Controller
 
         return redirect()->back()->with('success', 'Time entry created successfully');
     }
+
+    public function update(Request $request, TimeEntry $timeEntry)
+    {
+        if ($request->user()->cannot('update', $timeEntry)) {
+            return response()->json(['message' => 'You are not authorized to update this time entry'], 403);
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'category_id' => 'required|exists:categories,id',
+            'end_time' => 'date',
+        ]);
+
+        $timeEntry->update([
+            'end_time' => $request->end_time,
+        ]);
+
+        $timeEntry->task()->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'category_id' => $request->category_id,
+        ]);
+
+        return redirect()->back()->with('success', 'Time entry updated successfully');
+    }
 }
