@@ -13,7 +13,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('time-entries', [TimeEntryController::class, 'index'])->name('time-entries.index');
+    Route::group(['prefix' => 'time-entries'], function () {
+        Route::get('/', [TimeEntryController::class, 'index'])->name('time-entries.index');
+        Route::post('/', [TimeEntryController::class, 'store'])->name('time-entries.store');
+    });
 });
 
 require __DIR__.'/settings.php';
