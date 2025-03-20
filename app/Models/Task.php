@@ -42,4 +42,14 @@ class Task extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    /**
+     * Get the time entries for the task.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<TimeEntry>
+     */
+    public function timeEntries(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TimeEntry::class);
+    }
 }

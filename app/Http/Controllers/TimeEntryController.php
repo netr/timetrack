@@ -11,7 +11,15 @@ class TimeEntryController extends Controller
 {
     public function index(): \Inertia\Response
     {
-        return Inertia::render('time-entries/index');
+        $timeEntries = TimeEntry::where('user_id', auth()->user()->id)
+            ->with('task')
+            ->orderBy('start_time', 'desc')
+            ->get();
+
+        return Inertia::render('time-entries/index',
+            [
+                'timeEntries' => $timeEntries,
+            ]);
     }
 
     public function store(Request $request): JsonResponse

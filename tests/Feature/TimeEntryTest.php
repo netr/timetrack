@@ -17,9 +17,19 @@ describe('authenticated users', function () {
     });
 
     it('can visit the time entries page', function () {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-        $this->get('/time-entries')->assertOk();
+        Task::factory()
+            ->count(5)
+            ->has(TimeEntry::factory())
+            ->create([
+                'user_id' => $this->user->id,
+            ]);
+
+        $this->get('/time-entries')
+            ->assertOk()
+            ->assertInertia(fn ($assert) => $assert
+                ->component('time-entries/index')
+                ->has('timeEntries', 5)
+            );
     });
 
     it('can create a time entry without end time', function () {
