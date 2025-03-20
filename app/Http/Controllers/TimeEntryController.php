@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\TimeEntry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class TimeEntryController extends Controller
 {
@@ -16,7 +15,7 @@ class TimeEntryController extends Controller
             ->orderBy('start_time', 'desc')
             ->get();
 
-        return Inertia::render('time-entries/index',
+        return inertia('time-entries/index',
             [
                 'timeEntries' => $timeEntries,
             ]);

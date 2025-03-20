@@ -1,7 +1,9 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 
+import { Alert } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
+import { type SharedData } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -15,10 +17,16 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function TimeEntries() {
+    const { flash } = usePage<SharedData>().props;
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Time Entries" />
-            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">hey</div>
+            {flash.message && (
+                <div className={'px-4 pt-4'}>
+                    <Alert>{flash.message}</Alert>
+                </div>
+            )}
+            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl px-4 py-4">hey</div>
         </AppLayout>
     );
 }
