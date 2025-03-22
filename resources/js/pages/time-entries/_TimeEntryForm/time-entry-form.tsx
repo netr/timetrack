@@ -5,6 +5,7 @@ import { FormEventHandler, useRef, useState } from 'react';
 
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -23,6 +24,7 @@ export const TimeEntryForm = () => {
         category_id: '',
         start_time: '',
         end_time: '',
+        date: '',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -54,6 +56,7 @@ export const TimeEntryForm = () => {
             <InputError message={errors.category_id} />
             <InputError message={errors.start_time} />
             <InputError message={errors.end_time} />
+            <InputError message={errors.date} />
             <form onSubmit={submit}>
                 <div className="flex items-center gap-2">
                     <Input
@@ -107,6 +110,12 @@ export const TimeEntryForm = () => {
                                     </div>
                                 </div>
                             </div>
+                            <DatePicker
+                                onChange={(dateString) => {
+                                    setData('date', dateString);
+                                }}
+                                value={data.date}
+                            />
                             <Button type={'submit'}>Save</Button>
                         </>
                     )}
