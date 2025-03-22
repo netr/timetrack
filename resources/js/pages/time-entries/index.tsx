@@ -23,7 +23,7 @@ export default function TimeEntries() {
             <Head title="Time Entries" />
             {flash.message && (
                 <div className={'px-4 pt-4'}>
-                    <Alert>{flash.message}</Alert>
+                    <Alert variant={flash.type.name as 'default' | 'destructive'}>{flash.message}</Alert>
                 </div>
             )}
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl px-4 py-4">hey</div>
