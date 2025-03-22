@@ -3,9 +3,9 @@ import { format, parse } from 'date-fns';
 import { Clock, Timer } from 'lucide-react';
 import { FormEventHandler, useRef, useState } from 'react';
 
+import { DatePicker } from '@/components/date-picker';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -111,6 +111,7 @@ export const TimeEntryForm = () => {
                                 </div>
                             </div>
                             <DatePicker
+                                className={'w-[200px]'}
                                 onChange={(dateString) => {
                                     setData('date', dateString);
                                 }}
