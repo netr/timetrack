@@ -2,6 +2,7 @@ import { Head, usePage } from '@inertiajs/react';
 
 import { Alert } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
+import { TimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/TimeEntryForm';
 import { BreadcrumbItem } from '@/types';
 import { type SharedData } from '@/types';
 
@@ -26,6 +27,10 @@ export default function TimeEntries() {
                     <Alert variant={flash.type.name as 'default' | 'destructive'}>{flash.message}</Alert>
                 </div>
             )}
+
+            <div className={'mx-4 mt-4 rounded-xl border p-4'}>
+                <TimeEntryForm />
+            </div>
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl px-4 py-4">hey</div>
         </AppLayout>
     );
