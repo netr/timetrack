@@ -15,7 +15,7 @@ class TimeEntryController extends Controller
     public function index(): \Inertia\Response
     {
         $timeEntries = TimeEntry::where('user_id', auth()->user()->id)
-            ->with('task')
+            ->with('task', 'task.category')
             ->orderBy('start_time', 'desc')
             ->get();
 
