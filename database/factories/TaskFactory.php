@@ -17,7 +17,6 @@ class TaskFactory extends Factory
             'user_id' => User::factory(),
             'category_id' => Category::factory(),
             'title' => fake()->sentence(),
-            'description' => fake()->paragraph(),
         ];
     }
 }
