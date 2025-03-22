@@ -19,7 +19,7 @@ export const TimeEntryForm = () => {
 
     const taskNameInput = useRef<HTMLInputElement>(null);
 
-    const { data, setData, errors, post, reset, processing, recentlySuccessful } = useForm({
+    const { data, setData, errors, post, reset, processing } = useForm({
         task_title: '',
         category_id: '',
         start_time: '',
@@ -117,7 +117,12 @@ export const TimeEntryForm = () => {
                                 }}
                                 value={data.date}
                             />
-                            <Button type={'submit'}>Save</Button>
+                            <Button
+                                disabled={processing || isEndTimeInvalid || isStartTimeInvalid || !data.task_title || !data.start_time}
+                                type={'submit'}
+                            >
+                                Save
+                            </Button>
                         </>
                     )}
 
