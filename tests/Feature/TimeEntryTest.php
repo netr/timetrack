@@ -48,10 +48,9 @@ describe('authenticated users', function () {
                 'start_time' => $startTime,
                 'end_time' => null,
                 'date' => $date,
-            ])->assertRedirectToRoute('time-entries.index', [
-                'message' => 'Time entry created successfully',
-                'message-type' => 'default',
-            ]);
+            ])
+                ->assertRedirectToRoute('time-entries.index')
+                ->assertSessionHas('message-type', 'success');
 
             $this->assertDatabaseHas('time_entries', [
                 'user_id' => $this->user->id,
@@ -76,10 +75,9 @@ describe('authenticated users', function () {
                 'start_time' => $startTime,
                 'end_time' => $endTime,
                 'date' => $date,
-            ])->assertRedirectToRoute('time-entries.index', [
-                'message' => 'Time entry created successfully',
-                'message-type' => 'default',
-            ]);
+            ])
+                ->assertRedirectToRoute('time-entries.index')
+                ->assertSessionHas('message-type', 'success');
 
             $this->assertDatabaseHas('time_entries', [
                 'user_id' => $this->user->id,
@@ -101,10 +99,9 @@ describe('authenticated users', function () {
                 'start_time' => $startTime,
                 'end_time' => null,
                 'date' => $date,
-            ])->assertRedirectToRoute('time-entries.index', [
-                'message' => 'Time entry created successfully',
-                'message-type' => 'default',
-            ]);
+            ])
+                ->assertRedirectToRoute('time-entries.index')
+                ->assertSessionHas('message-type', 'success');
 
             $this->assertDatabaseHas('tasks', [
                 'user_id' => $this->user->id,
@@ -196,7 +193,9 @@ describe('authenticated users', function () {
 
             $this->actingAs($anotherUser);
 
-            $this->json('DELETE', "/time-entries/{$timeEntry->id}")->assertStatus(403);
+            $this->json('DELETE', "/time-entries/{$timeEntry->id}")
+                ->assertRedirectToRoute('time-entries.index')
+                ->assertSessionHas('message-type', 'destructive');
 
             $this->assertDatabaseHas('time_entries', [
                 'id' => $timeEntry->id,

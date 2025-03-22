@@ -64,10 +64,9 @@ class TimeEntryController extends Controller
                     'end_time' => $endTime,
                 ]);
 
-                return to_route('time-entries.index', [
-                    'message' => 'Time entry created successfully',
-                    'message-type' => 'default',
-                ]);
+                return to_route('time-entries.index')
+                    ->with('message', 'Time entry added successfully')
+                    ->with('message-type', 'success');
             });
         } catch (\Exception $e) {
             Log::error($e->getMessage(), [
@@ -76,10 +75,9 @@ class TimeEntryController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return to_route('time-entries.index', [
-                'message' => 'An unexpected error occurred',
-                'message-type' => 'destructive',
-            ]);
+            return to_route('time-entries.index')
+                ->with('message', 'An unexpected error occurred')
+                ->with('message-type', 'destructive');
         } catch (\Throwable $e) {
             Log::error($e->getMessage(), [
                 'file' => $e->getFile(),
@@ -87,10 +85,9 @@ class TimeEntryController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return to_route('time-entries.index', [
-                'message' => 'An error occurred',
-                'message-type' => 'destructive',
-            ]);
+            return to_route('time-entries.index')
+                ->with('message', 'An unexpected error occurred')
+                ->with('message-type', 'destructive');
         }
     }
 
@@ -118,14 +115,29 @@ class TimeEntryController extends Controller
         return response()->json(['message' => 'Time entry updated successfully'], 200);
     }
 
-    public function destroy(Request $request, TimeEntry $timeEntry): JsonResponse
+    public function destroy(Request $request, TimeEntry $timeEntry): \Illuminate\Http\RedirectResponse
     {
         if ($request->user()->cannot('delete', $timeEntry)) {
-            return response()->json(['message' => 'You are not authorized to delete this time entry'], 403);
+            Log::info('User not allowed to delete time entry', [
+                'user_id' => auth()->id(),
+                'time_entry_user_id' => $timeEntry->user_id,
+                'time_entry_id' => $timeEntry->id,
+            ]);
+
+            return to_route('time-entries.index')
+                ->with('message', 'You are not authorized to delete this time entry')
+                ->with('message-type', 'destructive');
         }
 
         $timeEntry->delete();
 
-        return response()->json(['message' => 'Time entry deleted successfully']);
+        Log::info('Time entry deleted', [
+            'user_id' => auth()->id(),
+            'time_entry_id' => $timeEntry->id,
+        ]);
+
+        return to_route('time-entries.index')
+            ->with('message', 'Time entry deleted successfully')
+            ->with('message-type', 'success');
     }
 }

@@ -1,6 +1,8 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
+import { CheckIcon, Trash2Icon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-import { Alert } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { TimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-form';
@@ -21,12 +23,45 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] }) {
     const { flash } = usePage<SharedData>().props;
+    const [showAlert, setShowAlert] = useState(false);
+
+    useEffect(() => {
+        if (flash.message) {
+            setShowAlert(true);
+        }
+    }, [flash.message]);
+
+    const handleHideAlert = () => {
+        setShowAlert(false);
+    };
+
+    const { delete: deleteTimeEntry } = useForm({});
+
+    const handleDeleteTimeEntry = (id: number) => () => {
+        if (confirm('Are you sure you want to delete this time entry?')) {
+            deleteTimeEntry(route('time-entries.destroy', id), {
+                onSuccess: () => {
+                    // Remove the time entry from the list
+                },
+            });
+        }
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Time Entries" />
-            {flash.message && (
+            {showAlert && (
                 <div className={'px-4 pt-4'}>
-                    <Alert variant={flash.type.name as 'default' | 'destructive'}>{flash.message}</Alert>
+                    <Alert
+                        className={'relative'}
+                        onClose={handleHideAlert}
+                        showCloseButton
+                        variant={flash.type.toString() as 'default' | 'success' | 'destructive'}
+                    >
+                        <CheckIcon className="h-4 w-4" />
+                        <AlertTitle className={'uppercase'}>{flash.type.toString()}</AlertTitle>
+                        <AlertDescription>{flash.message}</AlertDescription>
+                    </Alert>
                 </div>
             )}
 
@@ -37,11 +72,12 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
                 <Table>
                     <TableCaption>A list of your tasks</TableCaption>
                     <TableHeader>
-                        <TableRow>
+                        <TableRow className={'bg-gray-50'}>
                             <TableHead className="w-[100px]">ID</TableHead>
                             <TableHead>Title</TableHead>
                             <TableHead>Category</TableHead>
                             <TableHead className="text-right">Time</TableHead>
+                            <TableHead className="text-right">Action</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -52,6 +88,12 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
                                 <TableCell>{entry.task.category?.name || 'Uncategorized'}</TableCell>
                                 <TableCell className="text-right">
                                     {entry.start_time} - {entry.end_time}
+                                </TableCell>
+                                <TableCell className={'flex justify-end gap-x-2'}>
+                                    <button className="text-blue-500">Edit</button>
+                                    <button className="text-red-500" onClick={handleDeleteTimeEntry(entry.id)}>
+                                        <Trash2Icon className={'h-4 w-4'} />
+                                    </button>
                                 </TableCell>
                             </TableRow>
                         ))}
