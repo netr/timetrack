@@ -3,6 +3,7 @@
 import { format, parse } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
 import * as React from 'react';
+import { Matcher } from 'react-day-picker';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -14,10 +15,14 @@ export function DatePicker({
     value,
     onChange,
     className,
+    disabled,
+    disabledDates,
     dateFormat = 'EEE MMM dd yyyy', // Format matching toDateString()
 }: {
     value: string | undefined;
     onChange: (date: string) => void;
+    disabled?: boolean;
+    disabledDates?: undefined | Matcher | Matcher[];
     className?: string;
     dateFormat?: string;
 }) {
@@ -43,6 +48,7 @@ export function DatePicker({
             <PopoverTrigger asChild>
                 <Button
                     className={cn('w-[280px] justify-start text-left font-normal', !value && 'text-muted-foreground', className)}
+                    disabled={disabled}
                     variant={'outline'}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -50,7 +56,7 @@ export function DatePicker({
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
-                <Calendar initialFocus mode="single" onSelect={handleSelect} selected={dateValue} />
+                <Calendar disabled={disabledDates} initialFocus mode="single" onSelect={handleSelect} selected={dateValue} />
             </PopoverContent>
         </Popover>
     );
