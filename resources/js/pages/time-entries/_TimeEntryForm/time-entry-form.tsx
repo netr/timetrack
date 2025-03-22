@@ -112,6 +112,7 @@ export const TimeEntryForm = () => {
                             </div>
                             <DatePicker
                                 className={'w-[200px]'}
+                                disabledDates={{ after: new Date() }}
                                 onChange={(dateString) => {
                                     setData('date', dateString);
                                 }}
