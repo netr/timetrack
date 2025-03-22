@@ -19,6 +19,8 @@ export const TimeEntryForm = () => {
     const { data, setData, errors, post, reset, processing, recentlySuccessful } = useForm({
         taskName: '',
         category: '',
+        startTime: '',
+        endTime: '',
     });
 
     const handleTimeEntrySave = (duration: string) => {
