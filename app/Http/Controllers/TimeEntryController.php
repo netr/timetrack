@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTimeEntryRequest;
+use App\Models\Task;
 use App\Models\TimeEntry;
+use DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Log;
 
 class TimeEntryController extends Controller
 {
@@ -21,32 +25,73 @@ class TimeEntryController extends Controller
             ]);
     }
 
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(StoreTimeEntryRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $request->validate([
-            'task_id' => 'required|exists:tasks,id',
-            'start_time' => 'required|date',
-            'end_time' => 'nullable|date',
-        ]);
+        $validated = $request->validated();
 
         try {
-            TimeEntry::create([
-                'user_id' => auth()->user()->id,
-                'task_id' => $request->task_id,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-            ]);
+            return DB::transaction(static function () use ($request, $validated) {
+                $userId = auth()->id();
+
+                // Create or find task
+                if (! $request->safe()->has('task_id')) {
+                    $task = Task::create([
+                        'user_id' => $userId,
+                        'category_id' => $validated['category_id'],
+                        'title' => $validated['task_title'],
+                    ]);
+                } else {
+                    $task = Task::findOrFail($validated['task_id']);
+                }
+
+                // Combine date and time
+                $startTime = "{$validated['date']} {$validated['start_time']}";
+                $endTime = $request->safe()->has('end_time')
+                    ? "{$validated['date']} {$validated['end_time']}"
+                    : null;
+
+                // Create time entry using relationship
+                $task->timeEntries()->create([
+                    'user_id' => $userId,
+                    'start_time' => $startTime,
+                    'end_time' => $endTime,
+                ]);
+
+                Log::info('Time entry created', [
+                    'user_id' => $userId,
+                    'task_id' => $task->id,
+                    'start_time' => $startTime,
+                    'end_time' => $endTime,
+                ]);
+
+                return to_route('time-entries.index', [
+                    'message' => 'Time entry created successfully',
+                    'message-type' => 'default',
+                ]);
+            });
         } catch (\Exception $e) {
-            return to_route('users.index', [
-                'message' => 'An error occurred while creating the time entry',
+            Log::error($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return to_route('time-entries.index', [
+                'message' => 'An unexpected error occurred',
+                'message-type' => 'destructive',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error($e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return to_route('time-entries.index', [
+                'message' => 'An error occurred',
                 'message-type' => 'destructive',
             ]);
         }
-
-        return to_route('users.index', [
-            'message' => 'Time entry created successfully',
-            'message-type' => 'default',
-        ]);
     }
 
     public function update(Request $request, TimeEntry $timeEntry): JsonResponse
