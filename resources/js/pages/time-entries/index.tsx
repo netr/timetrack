@@ -2,7 +2,7 @@ import { Head, usePage } from '@inertiajs/react';
 
 import { Alert } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
-import { TimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/TimeEntryForm';
+import { TimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-form';
 import { BreadcrumbItem } from '@/types';
 import { type SharedData } from '@/types';
 

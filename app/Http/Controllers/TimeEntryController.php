@@ -21,7 +21,7 @@ class TimeEntryController extends Controller
             ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'task_id' => 'required|exists:tasks,id',
@@ -37,10 +37,16 @@ class TimeEntryController extends Controller
                 'end_time' => $request->end_time,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Time entry creation failed'], 500);
+            return to_route('users.index', [
+                'message' => 'An error occurred while creating the time entry',
+                'message-type' => 'destructive',
+            ]);
         }
 
-        return response()->json(['message' => 'Time entry created successfully'], 201);
+        return to_route('users.index', [
+            'message' => 'Time entry created successfully',
+            'message-type' => 'default',
+        ]);
     }
 
     public function update(Request $request, TimeEntry $timeEntry): JsonResponse
