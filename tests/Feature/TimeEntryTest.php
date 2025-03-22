@@ -46,6 +46,7 @@ describe('authenticated users', function () {
                 'task_id' => $task->id,
                 'category_id' => $task->category_id,
                 'start_time' => $startTime,
+                'end_time' => null,
                 'date' => $date,
             ])->assertRedirectToRoute('time-entries.index', [
                 'message' => 'Time entry created successfully',
@@ -98,6 +99,7 @@ describe('authenticated users', function () {
                 'task_title' => 'random title',
                 'category_id' => $category->id,
                 'start_time' => $startTime,
+                'end_time' => null,
                 'date' => $date,
             ])->assertRedirectToRoute('time-entries.index', [
                 'message' => 'Time entry created successfully',
@@ -131,7 +133,6 @@ describe('authenticated users', function () {
             $this->json('PUT', "/time-entries/{$timeEntry->id}", [
                 'end_time' => $endTime,
                 'title' => 'Test',
-                'description' => 'Test',
                 'category_id' => $task->category_id,
             ]);
 
@@ -143,7 +144,6 @@ describe('authenticated users', function () {
             $this->assertDatabaseHas('tasks', [
                 'id' => $task->id,
                 'title' => 'Test',
-                'description' => 'Test',
                 'category_id' => $task->category_id,
             ]);
         });

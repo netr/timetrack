@@ -46,7 +46,7 @@ class TimeEntryController extends Controller
 
                 // Combine date and time
                 $startTime = "{$validated['date']} {$validated['start_time']}";
-                $endTime = $request->safe()->has('end_time')
+                $endTime = ! $request->safe()->isNotFilled('end_time')
                     ? "{$validated['date']} {$validated['end_time']}"
                     : null;
 
@@ -102,7 +102,6 @@ class TimeEntryController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'end_time' => 'date',
         ]);
@@ -113,7 +112,6 @@ class TimeEntryController extends Controller
 
         $timeEntry->task()->update([
             'title' => $request->title,
-            'description' => $request->description,
             'category_id' => $request->category_id,
         ]);
 
