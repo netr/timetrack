@@ -14,12 +14,11 @@ interface TimeEntryProps {
     saveDisabled?: boolean;
 }
 
-export function TimeEntryTimerMode({ onSave, mode, onModeChange, className, saveDisabled }: TimeEntryProps) {
+export function TimeEntryTimerMode({ mode, onModeChange, className, saveDisabled }: TimeEntryProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [timerValue, setTimerValue] = useState<number>(0);
     const [timerStart, setTimerStart] = useState<number | null>(null);
     const [error, setError] = useState<string>('');
-    const [isLoading, setIsLoading] = useState(false);
 
     // Format milliseconds to duration
     const formatDuration = (ms: number) => {
@@ -72,7 +71,7 @@ export function TimeEntryTimerMode({ onSave, mode, onModeChange, className, save
             <div className="flex w-full items-center gap-2">
                 <div className="flex flex-1 items-center gap-2">
                     <span className="flex-1 text-center font-mono">{formatDuration(timerValue)}</span>
-                    <Button disabled={isLoading || saveDisabled} onClick={handleTimerToggle} size="icon" variant="outline">
+                    <Button disabled={saveDisabled} onClick={handleTimerToggle} size="icon" variant="outline">
                         {isRunning ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                     </Button>
                 </div>

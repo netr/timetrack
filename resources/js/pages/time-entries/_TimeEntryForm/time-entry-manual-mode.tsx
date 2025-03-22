@@ -14,7 +14,7 @@ interface TimeEntryProps {
     saveDisabled?: boolean;
 }
 
-export function TimeEntryManualMode({ onSave, mode, onModeChange, className, saveDisabled }: TimeEntryProps) {
+export function TimeEntryManualMode({ mode, onModeChange, className }: TimeEntryProps) {
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [error, setError] = useState<string>('');
