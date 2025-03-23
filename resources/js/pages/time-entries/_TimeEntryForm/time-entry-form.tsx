@@ -73,8 +73,14 @@ export const TimeEntryForm = () => {
                         value={data.task_title}
                     />
 
-                    <Select onValueChange={(e) => setData('category_id', e)} value={data.category_id}>
-                        <SelectTrigger className="w-[130px]">
+                    <Select
+                        onValueChange={(e) => {
+                            setData('category_id', e);
+                            setError('category_id', '');
+                        }}
+                        value={data.category_id}
+                    >
+                        <SelectTrigger className="w-[130px]" error={errors.category_id}>
                             <SelectValue placeholder="Category" />
                         </SelectTrigger>
                         <SelectContent>
@@ -123,8 +129,10 @@ export const TimeEntryForm = () => {
                             <DatePicker
                                 className={'w-[200px]'}
                                 disabledDates={{ after: new Date() }}
+                                error={errors.date}
                                 onChange={(dateString) => {
                                     setData('date', dateString);
+                                    setError('date', '');
                                 }}
                                 value={data.date}
                             />
