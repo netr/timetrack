@@ -37,7 +37,7 @@ describe('authenticated users', function () {
     it('should create a task when no task_id is set and does not show alert', function () {
         $category = Category::factory()->create();
 
-        $startTime = now()->subHours(1)->format('H:i:s');
+        $startTime = now()->subHour()->format('H:i:s');
         $date = now()->toDateString();
 
         $this->json('POST', '/time-entries', [
@@ -72,7 +72,7 @@ describe('authenticated users', function () {
                 'user_id' => $this->user->id,
             ]);
 
-            $startTime = now()->subHours(1)->format('H:i:s');
+            $startTime = now()->subHour()->format('H:i:s');
             $date = now()->toDateString();
 
             $this->json('POST', '/time-entries', [
@@ -101,7 +101,7 @@ describe('authenticated users', function () {
                 'user_id' => $this->user->id,
             ]);
 
-            $startTime = now()->subHours(1)->format('H:i:s');
+            $startTime = now()->subHour()->format('H:i:s');
             $date = now()->toDateString();
             $endTime = now()->format('H:i:s');
 
@@ -124,7 +124,7 @@ describe('authenticated users', function () {
             ]);
 
             $date = now()->toDateString();
-            $startTime = now()->subHours(1)->format('H:i');
+            $startTime = now()->subHour()->format('H:i');
             $endTime = now()->format('H:i:s');
 
             $this->json('POST', '/time-entries', [
@@ -144,7 +144,7 @@ describe('authenticated users', function () {
             ]);
 
             $date = now()->toDateString();
-            $startTime = now()->subHours(1)->format('H:i:s');
+            $startTime = now()->subHour()->format('H:i:s');
             $endTime = now()->format('H:i:s');
 
             $this->json('POST', '/time-entries', [
@@ -174,8 +174,7 @@ describe('authenticated users', function () {
             ]);
 
             $date = now()->toDateString();
-            $startTime = now()->subHours(1)->format('H:i:s');
-            $endTime = now()->format('H:i:s');
+            $startTime = now()->subHour()->format('H:i:s');
 
             // This will fail because end_time is required
             $this->json('POST', '/time-entries', [
