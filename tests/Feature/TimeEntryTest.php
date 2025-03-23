@@ -114,6 +114,26 @@ describe('authenticated users', function () {
     });
 
     describe('when creating in manual mode', function () {
+        it('should fail with invalid start_time format', function () {
+            $task = Task::factory()->create([
+                'user_id' => $this->user->id,
+            ]);
+
+            $date = now()->toDateString();
+            $startTime = now()->subHours(1)->format('H:i:s');
+            $endTime = now()->format('H:i');
+
+            $this->json('POST', '/time-entries', [
+                'mode' => 'manual',
+                'task_id' => $task->id,
+                'category_id' => $task->category_id,
+                'start_time' => $startTime,
+                'end_time' => $endTime,
+                'date' => $date,
+            ])
+                ->assertJsonValidationErrors('start_time');
+        });
+
         it('allows end_time to be set', function () {
             $task = Task::factory()->create([
                 'user_id' => $this->user->id,
