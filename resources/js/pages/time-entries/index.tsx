@@ -1,5 +1,5 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
-import { CheckIcon, Trash2Icon } from 'lucide-react';
+import { CheckIcon, FileEditIcon, Trash2Icon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -90,8 +90,10 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
                                     {entry.start_time} - {entry.end_time}
                                 </TableCell>
                                 <TableCell className={'flex justify-end gap-x-2'}>
-                                    <button className="text-blue-500">Edit</button>
-                                    <button className="text-red-500" onClick={handleDeleteTimeEntry(entry.id)}>
+                                    <button className="cursor-pointer text-gray-500 hover:text-green-500">
+                                        <FileEditIcon className={'h-4 w-4'} />{' '}
+                                    </button>
+                                    <button className="cursor-pointer text-gray-500 hover:text-red-500" onClick={handleDeleteTimeEntry(entry.id)}>
                                         <Trash2Icon className={'h-4 w-4'} />
                                     </button>
                                 </TableCell>
