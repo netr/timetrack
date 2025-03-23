@@ -15,7 +15,7 @@ class UpdateTimeEntryRequest extends FormRequest
     {
         return [
             'task_title' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
             'end_time' => ['required', 'date'],
         ];
     }
