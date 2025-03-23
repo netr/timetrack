@@ -7,6 +7,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import AppLayout from '@/layouts/app-layout';
 import { CreateTimeEntryProvider } from '@/pages/time-entries/_TimeEntryForm/time-entry-context';
 import { TimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-form';
+import { TimeEntryTimerRunningForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-timer-running-form';
 import { BreadcrumbItem } from '@/types';
 import { type SharedData } from '@/types';
 import { TimeEntry } from '@/types/tasks';
@@ -38,6 +39,9 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
 
     const { delete: deleteTimeEntry } = useForm({});
 
+    const currentlyRunningTimers = timeEntries.filter((entry) => !entry.end_time);
+    const finishedTimeEntries = timeEntries.filter((entry) => entry.end_time);
+
     const handleDeleteTimeEntry = (id: number) => () => {
         if (confirm('Are you sure you want to delete this time entry?')) {
             deleteTimeEntry(route('time-entries.destroy', id), {
@@ -51,6 +55,23 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Time Entries" />
+
+            <CreateTimeEntryProvider>
+                {currentlyRunningTimers.length > 0 ? (
+                    <div className={'mx-4 mt-4 rounded-xl border p-4'}>
+                        {currentlyRunningTimers.map((entry) => (
+                            <TimeEntryTimerRunningForm key={entry.id} timeEntry={entry} />
+                        ))}
+                    </div>
+                ) : null}
+
+                {currentlyRunningTimers.length === 0 ? (
+                    <div className={'mx-4 mt-4 rounded-xl border p-4'}>
+                        <TimeEntryForm />
+                    </div>
+                ) : null}
+            </CreateTimeEntryProvider>
+
             {showAlert && (
                 <div className={'px-4 pt-4'}>
                     <Alert
@@ -66,11 +87,6 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
                 </div>
             )}
 
-            <div className={'mx-4 mt-4 rounded-xl border p-4'}>
-                <CreateTimeEntryProvider>
-                    <TimeEntryForm />
-                </CreateTimeEntryProvider>
-            </div>
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl px-4 py-4">
                 <Table>
                     <TableCaption>A list of your tasks</TableCaption>
@@ -84,7 +100,7 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {timeEntries.map((entry) => (
+                        {finishedTimeEntries.map((entry) => (
                             <TableRow key={entry.id}>
                                 <TableCell className="font-medium">{entry.id}</TableCell>
                                 <TableCell>{entry.task.title}</TableCell>
