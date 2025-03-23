@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react';
 import type { Config } from 'ziggy-js';
 
-import { AlertVariants } from '@/components/ui/alert';
+import type { AlertVariant } from '@/components/ui/alert';
 
 export interface Auth {
     user: User;
@@ -29,7 +29,7 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     ziggy: Config & { location: string };
-    flash: { message: string; type: AlertVariants };
+    flash: { message: string; type: AlertVariant };
     [key: string]: unknown;
 }
 

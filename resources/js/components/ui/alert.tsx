@@ -21,9 +21,9 @@ const alertVariants = cva(
   }
 )
 
-export type AlertVariants = typeof alertVariants
+export type AlertVariant = VariantProps<typeof alertVariants>['variant']
 
-interface AlertProps extends React.ComponentProps<"div">, VariantProps<AlertVariants> {
+interface AlertProps extends React.ComponentProps<"div">, VariantProps<typeof alertVariants> {
   onClose?: () => void;
   showCloseButton?: boolean;
 }

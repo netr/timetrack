@@ -2,7 +2,7 @@ import { Head, usePage } from '@inertiajs/react';
 import { CheckIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle, AlertVariant } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
 import { ActiveTimerForm } from '@/pages/time-entries/_TimeEntryForms/active-timer-form';
 import { CreateTimeEntryForm } from '@/pages/time-entries/_TimeEntryForms/create-time-entry-form';
@@ -69,7 +69,7 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
                         className={'relative'}
                         onClose={handleHideAlert}
                         showCloseButton
-                        variant={flash.type ? (flash.type.toString() as 'default' | 'success' | 'destructive') : 'default'}
+                        variant={flash.type ? (flash.type.toString() as AlertVariant) : 'default'}
                     >
                         <CheckIcon className="h-4 w-4" />
                         <AlertTitle className={'uppercase'}>{flash.type ? flash.type.toString() : ''}</AlertTitle>
