@@ -7,18 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { useCreateTimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-context';
-import { TimeEntryManualMode } from '@/pages/time-entries/_TimeEntryForm/time-entry-manual-mode';
-import { TimeEntryTimerMode } from '@/pages/time-entries/_TimeEntryForm/time-entry-timer-mode';
+import { StartTimerModeButton } from '@/pages/time-entries/_TimeEntries/start-timer-mode-button';
+import { TimeAndDatePicker } from '@/pages/time-entries/_TimeEntries/time-and-date-picker';
+import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntries/time-entry-form-context';
+import { TimerDisplay } from '@/pages/time-entries/_TimeEntries/timer-display';
 
 const categories = ['Development', 'Design', 'Meeting', 'Research', 'Documentation', 'Other'];
 
-export const TimeEntryForm = () => {
+export const CreateTimeEntryForm = () => {
     const [timeEntryMode, setTimeEntryMode] = useState<'manual' | 'timer'>('manual');
-
     const taskNameInput = useRef<HTMLInputElement>(null);
-
-    const { form } = useCreateTimeEntryForm();
+    const { form } = useTimeEntryForm();
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -88,13 +87,19 @@ export const TimeEntryForm = () => {
                     </Select>
 
                     {timeEntryMode === 'timer' && (
-                        <>
-                            <TimeEntryTimerMode />
-                        </>
+                        <div className={'flex flex-col gap-2'}>
+                            <div className="flex w-full items-center gap-2">
+                                <div className="flex flex-1 items-center gap-2">
+                                    <TimerDisplay className={'flex-1 px-2'} isRunning={false} startTime={0} />
+                                    <StartTimerModeButton />
+                                </div>
+                            </div>
+                        </div>
                     )}
+
                     {timeEntryMode === 'manual' && (
                         <>
-                            <TimeEntryManualMode />
+                            <TimeAndDatePicker />
                             <Button
                                 disabled={
                                     form.processing ||

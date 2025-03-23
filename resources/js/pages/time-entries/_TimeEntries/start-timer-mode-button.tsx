@@ -5,26 +5,23 @@ import { Play } from 'lucide-react';
 import React, { useCallback } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { useCreateTimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-context';
+import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntries/time-entry-form-context';
 
 interface TimeEntryProps {
     className?: string;
-    saveDisabled?: boolean;
 }
 
-export function TimeEntryTimerMode({ className }: TimeEntryProps) {
-    const { form } = useCreateTimeEntryForm();
+export function StartTimerModeButton({ className }: TimeEntryProps) {
+    const { form } = useTimeEntryForm();
 
     const handleOnStart = useCallback(() => {
-        // Check if there's enough data to submit the form
         if (form.data.task_title) {
-            const joined = {
+            const newData = {
                 start_time: format(new Date(), 'HH:mm:ss'),
                 date: format(new Date(), 'yyyy-MM-dd'),
             };
-            form.transform((data) => ({ ...data, ...joined }));
-            // Trigger form submission
+            form.transform((oldData) => ({ ...oldData, ...newData }));
+
             form.post(route('time-entries.store'), {
                 preserveScroll: true,
                 onSuccess: () => {
@@ -42,15 +39,8 @@ export function TimeEntryTimerMode({ className }: TimeEntryProps) {
     const canControlTimer = form.data.task_title !== '';
 
     return (
-        <div className={cn('flex flex-col gap-2', className)}>
-            <div className="flex w-full items-center gap-2">
-                <div className="flex flex-1 items-center gap-2">
-                    <span className="flex-1 text-center font-mono">00:00:00</span>
-                    <Button disabled={!canControlTimer || form.processing} onClick={handleOnStart} size="icon" variant="outline">
-                        <Play className="h-4 w-4" />
-                    </Button>
-                </div>
-            </div>
-        </div>
+        <Button className={className} disabled={!canControlTimer || form.processing} onClick={handleOnStart} size="icon" variant="outline">
+            <Play className="h-4 w-4" />
+        </Button>
     );
 }

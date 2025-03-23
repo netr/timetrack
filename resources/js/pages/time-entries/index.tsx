@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { CreateTimeEntryProvider } from '@/pages/time-entries/_TimeEntryForm/time-entry-context';
-import { TimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-form';
-import { TimeEntryTimerRunningForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-timer-running-form';
+import { ActiveTimerForm } from '@/pages/time-entries/_TimeEntries/active-timer-form';
+import { CreateTimeEntryForm } from '@/pages/time-entries/_TimeEntries/create-time-entry-form';
+import { TimeEntryProvider } from '@/pages/time-entries/_TimeEntries/time-entry-form-context';
 import { BreadcrumbItem } from '@/types';
 import { type SharedData } from '@/types';
 import { TimeEntry } from '@/types/tasks';
@@ -30,6 +30,9 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
     useEffect(() => {
         if (flash.message) {
             setShowAlert(true);
+            setTimeout(() => {
+                setShowAlert(false);
+            }, 5000);
         }
     }, [flash.message]);
 
@@ -56,21 +59,21 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Time Entries" />
 
-            <CreateTimeEntryProvider>
+            <TimeEntryProvider>
                 {currentlyRunningTimers.length > 0 ? (
                     <div className={'mx-4 mt-4 rounded-xl border p-4'}>
                         {currentlyRunningTimers.map((entry) => (
-                            <TimeEntryTimerRunningForm key={entry.id} timeEntry={entry} />
+                            <ActiveTimerForm key={entry.id} timeEntry={entry} />
                         ))}
                     </div>
                 ) : null}
 
                 {currentlyRunningTimers.length === 0 ? (
                     <div className={'mx-4 mt-4 rounded-xl border p-4'}>
-                        <TimeEntryForm />
+                        <CreateTimeEntryForm />
                     </div>
                 ) : null}
-            </CreateTimeEntryProvider>
+            </TimeEntryProvider>
 
             {showAlert && (
                 <div className={'px-4 pt-4'}>

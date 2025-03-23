@@ -12,8 +12,11 @@ export const TimerDisplay = ({ isRunning, startTime, className }: TimerDisplayPr
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
-        // Prevent initial 00:00:00 render
-        setTimerValue(Date.now() - (startTime || 0));
+
+        if (isRunning) {
+            // Prevent initial 00:00:00 render
+            setTimerValue(Date.now() - (startTime || 0));
+        }
 
         if (isRunning && startTime) {
             intervalId = setInterval(() => {

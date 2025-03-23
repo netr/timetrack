@@ -3,10 +3,10 @@ import { format, parse } from 'date-fns';
 import { DatePicker } from '@/components/date-picker';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { useCreateTimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-context';
+import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntries/time-entry-form-context';
 
-export const TimeEntryManualMode = () => {
-    const { form } = useCreateTimeEntryForm();
+export const TimeAndDatePicker = () => {
+    const { form } = useTimeEntryForm();
 
     const isEndTimeInvalid = form.data.end_time && form.data.start_time && form.data.end_time < form.data.start_time;
     const isStartTimeInvalid = form.data.start_time && form.data.end_time && form.data.start_time > form.data.end_time;
