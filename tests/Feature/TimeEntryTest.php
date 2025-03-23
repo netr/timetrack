@@ -262,7 +262,7 @@ describe('authenticated users', function () {
                 'end_time' => now()->toDateTimeString(),
                 'task_title' => 'Test',
                 'category_id' => $task->category_id,
-            ])->dump();
+            ]);
 
             $this->assertDatabaseHas('tasks', [
                 'id' => $task->id,
