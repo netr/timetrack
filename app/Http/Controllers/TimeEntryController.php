@@ -14,14 +14,18 @@ class TimeEntryController extends Controller
 {
     public function index(): \Inertia\Response
     {
-        $timeEntries = TimeEntry::where('user_id', auth()->user()->id)
+        $timeEntries = TimeEntry::where('user_id', auth()->id())
             ->with('task', 'task.category')
             ->orderBy('start_time', 'desc')
             ->get();
 
+        $tasks = Task::where('user_id', auth()->id())->get();
+        $uniqueTasks = $tasks->unique('title')->values();
+
         return inertia('time-entries/index',
             [
                 'timeEntries' => $timeEntries,
+                'tasks' => $uniqueTasks,
             ]);
     }
 
