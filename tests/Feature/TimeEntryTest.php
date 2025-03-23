@@ -37,7 +37,7 @@ describe('authenticated users', function () {
     it('should create a task when no task_id is set', function () {
         $category = Category::factory()->create();
 
-        $startTime = now()->subHours(1)->format('H:i');
+        $startTime = now()->subHours(1)->format('H:i:s');
         $date = now()->toDateString();
 
         $this->json('POST', '/time-entries', [
@@ -48,7 +48,9 @@ describe('authenticated users', function () {
             'end_time' => null,
             'date' => $date,
         ])
-            ->assertRedirectToRoute('time-entries.index')
+            ->assertRedirectToRoute('time-entries.index', [
+                'time_entry_id' => 1,
+            ])
             ->assertSessionHas('message-type', 'success');
 
         $this->assertDatabaseHas('tasks', [
@@ -70,7 +72,7 @@ describe('authenticated users', function () {
                 'user_id' => $this->user->id,
             ]);
 
-            $startTime = now()->subHours(1)->format('H:i');
+            $startTime = now()->subHours(1)->format('H:i:s');
             $date = now()->toDateString();
 
             $this->json('POST', '/time-entries', [
@@ -81,7 +83,9 @@ describe('authenticated users', function () {
                 'end_time' => null,
                 'date' => $date,
             ])
-                ->assertRedirectToRoute('time-entries.index')
+                ->assertRedirectToRoute('time-entries.index', [
+                    'time_entry_id' => 1,
+                ])
                 ->assertSessionHas('message-type', 'success');
 
             $this->assertDatabaseHas('time_entries', [
@@ -97,9 +101,9 @@ describe('authenticated users', function () {
                 'user_id' => $this->user->id,
             ]);
 
-            $startTime = now()->subHours(1)->format('H:i');
+            $startTime = now()->subHours(1)->format('H:i:s');
             $date = now()->toDateString();
-            $endTime = now()->format('H:i');
+            $endTime = now()->format('H:i:s');
 
             $this->json('POST', '/time-entries', [
                 'mode' => 'timer',
@@ -120,8 +124,8 @@ describe('authenticated users', function () {
             ]);
 
             $date = now()->toDateString();
-            $startTime = now()->subHours(1)->format('H:i:s');
-            $endTime = now()->format('H:i');
+            $startTime = now()->subHours(1)->format('H:i');
+            $endTime = now()->format('H:i:s');
 
             $this->json('POST', '/time-entries', [
                 'mode' => 'manual',
@@ -140,8 +144,8 @@ describe('authenticated users', function () {
             ]);
 
             $date = now()->toDateString();
-            $startTime = now()->subHours(1)->format('H:i');
-            $endTime = now()->format('H:i');
+            $startTime = now()->subHours(1)->format('H:i:s');
+            $endTime = now()->format('H:i:s');
 
             $this->json('POST', '/time-entries', [
                 'mode' => 'manual',
@@ -151,7 +155,9 @@ describe('authenticated users', function () {
                 'end_time' => $endTime,
                 'date' => $date,
             ])
-                ->assertRedirectToRoute('time-entries.index')
+                ->assertRedirectToRoute('time-entries.index', [
+                    'time_entry_id' => 1,
+                ])
                 ->assertSessionHas('message-type', 'success');
 
             $this->assertDatabaseHas('time_entries', [
@@ -168,8 +174,8 @@ describe('authenticated users', function () {
             ]);
 
             $date = now()->toDateString();
-            $startTime = now()->subHours(1)->format('H:i');
-            $endTime = now()->format('H:i');
+            $startTime = now()->subHours(1)->format('H:i:s');
+            $endTime = now()->format('H:i:s');
 
             // This will fail because end_time is required
             $this->json('POST', '/time-entries', [
@@ -189,8 +195,8 @@ describe('authenticated users', function () {
             ]);
 
             $date = now()->toDateString();
-            $startTime = now()->startOfDay()->addHour()->format('H:i');
-            $endTime = now()->startOfDay()->format('H:i');
+            $startTime = now()->startOfDay()->addHour()->format('H:i:s');
+            $endTime = now()->startOfDay()->format('H:i:s');
 
             // This will fail because end_time is required
             $this->json('POST', '/time-entries', [

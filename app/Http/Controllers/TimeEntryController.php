@@ -52,7 +52,7 @@ class TimeEntryController extends Controller
                     : null;
 
                 // Create time entry using relationship
-                $task->timeEntries()->create([
+                $timeEntry = $task->timeEntries()->create([
                     'user_id' => $userId,
                     'start_time' => $startTime,
                     'end_time' => $endTime,
@@ -65,7 +65,10 @@ class TimeEntryController extends Controller
                     'end_time' => $endTime,
                 ]);
 
-                return to_route('time-entries.index')
+                return to_route('time-entries.index',
+                    [
+                        'time_entry_id' => $timeEntry->id,
+                    ])
                     ->with('message', 'Time entry added successfully')
                     ->with('message-type', 'success');
             });
