@@ -19,12 +19,13 @@ export const TimeEntryForm = () => {
 
     const taskNameInput = useRef<HTMLInputElement>(null);
 
-    const { data, setData, errors, post, reset, processing } = useForm({
+    const { data, setData, errors, setError, post, reset, processing } = useForm({
         task_title: '',
         category_id: '',
         start_time: '',
         end_time: '',
         date: '',
+        mode: 'manual',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -43,6 +44,7 @@ export const TimeEntryForm = () => {
 
     const handleModeChange = (mode: 'manual' | 'timer') => {
         setTimeEntryMode(mode);
+        setData('mode', mode);
         reset();
     };
 
@@ -61,7 +63,11 @@ export const TimeEntryForm = () => {
                 <div className="flex items-center gap-2">
                     <Input
                         className="flex-1"
-                        onChange={(e) => setData('task_title', e.target.value)}
+                        error={errors.task_title}
+                        onChange={(e) => {
+                            setData('task_title', e.target.value);
+                            setError('task_title', '');
+                        }}
                         placeholder="Task title"
                         ref={taskNameInput}
                         value={data.task_title}
@@ -92,8 +98,10 @@ export const TimeEntryForm = () => {
                                     <div className="flex flex-1 items-center gap-2">
                                         <Input
                                             className={cn('flex-1', isStartTimeInvalid && 'border-red-500 bg-red-50 text-red-500')}
+                                            error={errors.start_time}
                                             onChange={(e) => {
                                                 setData('start_time', formatTimeInput(e.target.value));
+                                                setError('start_time', '');
                                             }}
                                             type="time"
                                             value={data.start_time}
@@ -101,8 +109,10 @@ export const TimeEntryForm = () => {
                                         <span className="text-muted-foreground">to</span>
                                         <Input
                                             className={cn('flex-1', isEndTimeInvalid && 'border-red-500 bg-red-50 text-red-500')}
+                                            error={errors.end_time}
                                             onChange={(e) => {
                                                 setData('end_time', formatTimeInput(e.target.value));
+                                                setError('end_time', '');
                                             }}
                                             type="time"
                                             value={data.end_time}

@@ -19,7 +19,7 @@ class StoreTimeEntryRequest extends FormRequest
         return [
             'mode' => 'required|in:timer,manual',
             'task_id' => 'nullable|exists:tasks,id',
-            'task_title' => 'required_without:task_id|string|max:255',
+            'task_title' => 'required_without:task_id|string|min:3,max:255',
             'category_id' => 'nullable|exists:categories,id',
             'date' => 'required|date',
             'start_time' => ['required', Rule::date()->format('H:i')],
