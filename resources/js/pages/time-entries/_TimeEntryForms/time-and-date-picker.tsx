@@ -14,8 +14,8 @@ export const TimeAndDatePicker = () => {
                 <div className="flex w-full items-center gap-2">
                     <div className="flex flex-1 items-center gap-2">
                         <Input
-                            className={cn('flex-1', !isTimeRangeValid && 'border-red-500 bg-red-50 text-red-500')}
-                            error={form.errors.start_time}
+                            className={'flex-1'}
+                            error={form.errors.start_time || (!isTimeRangeValid ? 'Invalid time range' : null)}
                             onChange={(e) => {
                                 form.setData('start_time', formatTimeInput(e.target.value + ':00'));
                                 form.setError('start_time', '');
@@ -25,8 +25,8 @@ export const TimeAndDatePicker = () => {
                         />
                         <span className="text-muted-foreground">to</span>
                         <Input
-                            className={cn('flex-1', !isTimeRangeValid && 'border-red-500 bg-red-50 text-red-500')}
-                            error={form.errors.end_time}
+                            className={'flex-1'}
+                            error={form.errors.end_time || (!isTimeRangeValid ? 'Invalid time range' : null)}
                             onChange={(e) => {
                                 form.setData('end_time', formatTimeInput(e.target.value + ':00'));
                                 form.setError('end_time', '');
