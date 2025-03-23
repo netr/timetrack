@@ -17,7 +17,7 @@ export const TimeAndDatePicker = () => {
                             className={cn('flex-1', !isTimeRangeValid && 'border-red-500 bg-red-50 text-red-500')}
                             error={form.errors.start_time}
                             onChange={(e) => {
-                                form.setData('start_time', formatTimeInput(e.target.value));
+                                form.setData('start_time', formatTimeInput(e.target.value + ':00'));
                                 form.setError('start_time', '');
                             }}
                             type="time"
@@ -28,7 +28,7 @@ export const TimeAndDatePicker = () => {
                             className={cn('flex-1', !isTimeRangeValid && 'border-red-500 bg-red-50 text-red-500')}
                             error={form.errors.end_time}
                             onChange={(e) => {
-                                form.setData('end_time', formatTimeInput(e.target.value));
+                                form.setData('end_time', formatTimeInput(e.target.value + ':00'));
                                 form.setError('end_time', '');
                             }}
                             type="time"
