@@ -17,6 +17,7 @@ export function DatePicker({
     className,
     disabled,
     disabledDates,
+    error,
     dateFormat = 'EEE MMM dd yyyy', // Format matching toDateString()
 }: {
     value: string | undefined;
@@ -24,6 +25,7 @@ export function DatePicker({
     disabled?: boolean;
     disabledDates?: undefined | Matcher | Matcher[];
     className?: string;
+    error?: string;
     dateFormat?: string;
 }) {
     // Convert string to Date for internal use
@@ -47,7 +49,12 @@ export function DatePicker({
         <Popover>
             <PopoverTrigger asChild>
                 <Button
-                    className={cn('w-[280px] justify-start text-left font-normal', !value && 'text-muted-foreground', className)}
+                    className={cn(
+                        'w-[280px] justify-start text-left font-normal',
+                        !value && 'text-muted-foreground',
+                        className,
+                        error && 'border-destructive dark:border-destructive/40 text-destructive dark:text-destructive/40',
+                    )}
                     disabled={disabled}
                     variant={'outline'}
                 >
