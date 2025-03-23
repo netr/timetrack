@@ -3,7 +3,7 @@ import { format, parse } from 'date-fns';
 import { DatePicker } from '@/components/date-picker';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntries/time-entry-form-context';
+import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntryForms/time-entry-form-context';
 
 export const TimeAndDatePicker = () => {
     const { form } = useTimeEntryForm();

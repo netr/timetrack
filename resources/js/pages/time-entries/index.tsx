@@ -1,13 +1,13 @@
-import { Head, useForm, usePage } from '@inertiajs/react';
-import { CheckIcon, FileEditIcon, Trash2Icon } from 'lucide-react';
+import { Head, usePage } from '@inertiajs/react';
+import { CheckIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { ActiveTimerForm } from '@/pages/time-entries/_TimeEntries/active-timer-form';
-import { CreateTimeEntryForm } from '@/pages/time-entries/_TimeEntries/create-time-entry-form';
-import { TimeEntryProvider } from '@/pages/time-entries/_TimeEntries/time-entry-form-context';
+import { ActiveTimerForm } from '@/pages/time-entries/_TimeEntryForms/active-timer-form';
+import { CreateTimeEntryForm } from '@/pages/time-entries/_TimeEntryForms/create-time-entry-form';
+import { TimeEntryProvider } from '@/pages/time-entries/_TimeEntryForms/time-entry-form-context';
+import TimeEntriesTable from '@/pages/time-entries/_TimeEntryTable/time-entries-table';
 import { BreadcrumbItem } from '@/types';
 import { type SharedData } from '@/types';
 import { TimeEntry } from '@/types/tasks';
@@ -40,34 +40,23 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
         }
     }, [flash.message]);
 
-    const currentlyRunningTimers = timeEntries.filter((entry) => !entry.end_time);
-    const finishedTimeEntries = timeEntries.filter((entry) => entry.end_time);
-
-    const { delete: deleteTimeEntry } = useForm({});
-    const handleDeleteTimeEntry = (id: number) => () => {
-        if (confirm('Are you sure you want to delete this time entry?')) {
-            deleteTimeEntry(route('time-entries.destroy', id), {
-                onSuccess: () => {
-                    // Remove the time entry from the list
-                },
-            });
-        }
-    };
+    const timeEntriesWithActiveTimers = timeEntries.filter((entry) => !entry.end_time);
+    const completedTimeEntries = timeEntries.filter((entry) => entry.end_time);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Time Entries" />
 
             <TimeEntryProvider>
-                {currentlyRunningTimers.length > 0 ? (
+                {timeEntriesWithActiveTimers.length > 0 ? (
                     <div className={'mx-4 mt-4 rounded-xl border p-4'}>
-                        {currentlyRunningTimers.map((entry) => (
+                        {timeEntriesWithActiveTimers.map((entry) => (
                             <ActiveTimerForm key={entry.id} timeEntry={entry} />
                         ))}
                     </div>
                 ) : null}
 
-                {currentlyRunningTimers.length === 0 ? (
+                {timeEntriesWithActiveTimers.length === 0 ? (
                     <div className={'mx-4 mt-4 rounded-xl border p-4'}>
                         <CreateTimeEntryForm />
                     </div>
@@ -90,38 +79,7 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
             ) : null}
 
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl px-4 py-4">
-                <Table>
-                    <TableCaption>A list of your tasks</TableCaption>
-                    <TableHeader>
-                        <TableRow className={'bg-gray-50'}>
-                            <TableHead className="w-[100px]">ID</TableHead>
-                            <TableHead>Title</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead className="text-right">Time</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {finishedTimeEntries.map((entry) => (
-                            <TableRow key={entry.id}>
-                                <TableCell className="font-medium">{entry.id}</TableCell>
-                                <TableCell>{entry.task.title}</TableCell>
-                                <TableCell>{entry.task.category?.name || 'Uncategorized'}</TableCell>
-                                <TableCell className="text-right">
-                                    {entry.start_time} - {entry.end_time}
-                                </TableCell>
-                                <TableCell className={'flex justify-end gap-x-2'}>
-                                    <button className="cursor-pointer text-gray-500 hover:text-green-500">
-                                        <FileEditIcon className={'h-4 w-4'} />{' '}
-                                    </button>
-                                    <button className="cursor-pointer text-gray-500 hover:text-red-500" onClick={handleDeleteTimeEntry(entry.id)}>
-                                        <Trash2Icon className={'h-4 w-4'} />
-                                    </button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                <TimeEntriesTable timeEntries={completedTimeEntries} />
             </div>
         </AppLayout>
     );

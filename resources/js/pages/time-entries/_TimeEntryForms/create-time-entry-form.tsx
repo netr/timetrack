@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { StartTimerModeButton } from '@/pages/time-entries/_TimeEntries/start-timer-mode-button';
-import { TimeAndDatePicker } from '@/pages/time-entries/_TimeEntries/time-and-date-picker';
-import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntries/time-entry-form-context';
-import { TimerDisplay } from '@/pages/time-entries/_TimeEntries/timer-display';
+import { StartTimerModeButton } from '@/pages/time-entries/_TimeEntryForms/start-timer-mode-button';
+import { TimeAndDatePicker } from '@/pages/time-entries/_TimeEntryForms/time-and-date-picker';
+import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntryForms/time-entry-form-context';
+import { TimerDisplay } from '@/pages/time-entries/_TimeEntryForms/timer-display';
 
 const categories = ['Development', 'Design', 'Meeting', 'Research', 'Documentation', 'Other'];
 

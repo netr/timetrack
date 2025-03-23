@@ -5,7 +5,7 @@ import { Play } from 'lucide-react';
 import React, { useCallback } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntries/time-entry-form-context';
+import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntryForms/time-entry-form-context';
 
 interface TimeEntryProps {
     className?: string;

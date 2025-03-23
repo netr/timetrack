@@ -4,8 +4,8 @@ import { FormEventHandler } from 'react';
 
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
-import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntries/time-entry-form-context';
-import { TimerDisplay } from '@/pages/time-entries/_TimeEntries/timer-display';
+import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntryForms/time-entry-form-context';
+import { TimerDisplay } from '@/pages/time-entries/_TimeEntryForms/timer-display';
 import { TimeEntry } from '@/types/tasks';
 
 export const ActiveTimerForm = ({ timeEntry }: { timeEntry: TimeEntry }) => {
