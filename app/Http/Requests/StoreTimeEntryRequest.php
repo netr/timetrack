@@ -16,7 +16,7 @@ class StoreTimeEntryRequest extends FormRequest
     public function rules(): array
     {
         $isManualMode = $this->request->get('mode') === 'manual';
-        $manualModeRules = ['required', Rule::date()->format('H:i'), new TimeAfterRule($this->request->get('start_time'))];
+        $manualModeRules = ['required', Rule::date()->format('H:i:s'), new TimeAfterRule($this->request->get('start_time'))];
         $timerModeRules = ['prohibited'];
 
         return [
@@ -25,7 +25,7 @@ class StoreTimeEntryRequest extends FormRequest
             'task_title' => 'required_without:task_id|string|min:3,max:255',
             'category_id' => 'nullable|exists:categories,id',
             'date' => 'required|date',
-            'start_time' => ['required', Rule::date()->format('H:i')],
+            'start_time' => ['required', Rule::date()->format('H:i:s')],
             'end_time' => [
                 Rule::when($isManualMode, $manualModeRules, $timerModeRules),
             ],

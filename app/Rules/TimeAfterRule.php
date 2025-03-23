@@ -13,8 +13,8 @@ class TimeAfterRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         try {
-            $startTime = Carbon::createFromFormat('H:i', $this->startTime);
-            $endTime = Carbon::createFromFormat('H:i', $value);
+            $startTime = Carbon::createFromFormat('H:i:s', $this->startTime);
+            $endTime = Carbon::createFromFormat('H:i:s', $value);
 
             if ($startTime?->lt($endTime)) {
                 return;

@@ -57,8 +57,8 @@ export const TimeEntryManualMode = () => {
 const formatTimeInput = (value: string) => {
     try {
         if (!value) return '';
-        const date = parse(value, 'HH:mm', new Date());
-        return format(date, 'HH:mm');
+        const date = parse(value, 'HH:mm:ss', new Date());
+        return format(date, 'HH:mm:ss');
     } catch {
         return value;
     }

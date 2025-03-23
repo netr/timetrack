@@ -20,11 +20,15 @@ export function TimeEntryTimerMode({ className }: TimeEntryProps) {
 
     const { form } = useCreateTimeEntryForm();
 
+    // get query params
+    const urlParams = new URLSearchParams(window.location.search);
+    const timeEntryId = urlParams.get('time_entry_id');
+
     const handleOnStart = useCallback(() => {
         // Check if there's enough data to submit the form
         if (form.data.task_title) {
             const joined = {
-                start_time: format(new Date(), 'HH:mm'),
+                start_time: format(new Date(), 'HH:mm:ss'),
                 date: format(new Date(), 'yyyy-MM-dd'),
             };
             form.transform((data) => ({ ...data, ...joined }));
@@ -34,6 +38,26 @@ export function TimeEntryTimerMode({ className }: TimeEntryProps) {
                 onSuccess: () => {
                     setTimerStart(Date.now() - timerValue);
                     setIsRunning(true);
+                },
+                onError: (errors) => {
+                    console.log(errors);
+                },
+            });
+        }
+    }, [form, timerValue]);
+
+    const handleOnStop = useCallback(() => {
+        // Check if there's enough data to submit the form
+        if (form.data.task_title) {
+            const joined = {
+                end_time: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            };
+            form.transform((data) => ({ ...data, ...joined }));
+            // Trigger form submission
+            form.put(route('time-entries.update', [timeEntryId]), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsRunning(false);
                 },
                 onError: (errors) => {
                     console.log(errors);
@@ -76,17 +100,20 @@ export function TimeEntryTimerMode({ className }: TimeEntryProps) {
             handleOnStart();
         } else {
             setIsRunning(false);
+            handleOnStop();
         }
     };
 
-    const canRunTimer = form.data.task_title !== '';
+    // Ensure the task has a title, and verify that the timer is either not running or has been running for at least 1 second.
+    // If the user clicks the end button immediately after starting the timer, the PUT request will fail because of TimeAfterRule.
+    const canControlTimer = form.data.task_title !== '' && (!isRunning || (isRunning && timerValue > 1000));
 
     return (
         <div className={cn('flex flex-col gap-2', className)}>
             <div className="flex w-full items-center gap-2">
                 <div className="flex flex-1 items-center gap-2">
                     <span className="flex-1 text-center font-mono">{formatDuration(timerValue)}</span>
-                    <Button disabled={!canRunTimer} onClick={handleTimerToggle} size="icon" variant="outline">
+                    <Button disabled={!canControlTimer || form.processing} onClick={handleTimerToggle} size="icon" variant="outline">
                         {isRunning ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                     </Button>
                 </div>
