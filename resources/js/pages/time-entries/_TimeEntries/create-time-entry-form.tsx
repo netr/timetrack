@@ -1,4 +1,3 @@
-import { format, parse } from 'date-fns';
 import { Clock, Timer } from 'lucide-react';
 import { FormEventHandler, useCallback, useRef, useState } from 'react';
 
@@ -86,7 +85,7 @@ export const CreateTimeEntryForm = () => {
                         </SelectContent>
                     </Select>
 
-                    {timeEntryMode === 'timer' && (
+                    {timeEntryMode === 'timer' ? (
                         <div className={'flex flex-col gap-2'}>
                             <div className="flex w-full items-center gap-2">
                                 <div className="flex flex-1 items-center gap-2">
@@ -95,9 +94,9 @@ export const CreateTimeEntryForm = () => {
                                 </div>
                             </div>
                         </div>
-                    )}
+                    ) : null}
 
-                    {timeEntryMode === 'manual' && (
+                    {timeEntryMode === 'manual' ? (
                         <>
                             <TimeAndDatePicker />
                             <Button
@@ -115,7 +114,7 @@ export const CreateTimeEntryForm = () => {
                                 Save
                             </Button>
                         </>
-                    )}
+                    ) : null}
 
                     <ToggleGroup onValueChange={handleModeChange} type="single" value={timeEntryMode}>
                         <ToggleGroupItem aria-label="Manual mode" value="manual">
@@ -129,14 +128,4 @@ export const CreateTimeEntryForm = () => {
             </form>
         </div>
     );
-};
-
-const formatTimeInput = (value: string) => {
-    try {
-        if (!value) return '';
-        const date = parse(value, 'HH:mm', new Date());
-        return format(date, 'HH:mm');
-    } catch {
-        return value;
-    }
 };

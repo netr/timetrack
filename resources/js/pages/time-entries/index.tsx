@@ -27,6 +27,10 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
     const { flash } = usePage<SharedData>().props;
     const [showAlert, setShowAlert] = useState(false);
 
+    const handleHideAlert = () => {
+        setShowAlert(false);
+    };
+
     useEffect(() => {
         if (flash.message) {
             setShowAlert(true);
@@ -36,15 +40,10 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
         }
     }, [flash.message]);
 
-    const handleHideAlert = () => {
-        setShowAlert(false);
-    };
-
-    const { delete: deleteTimeEntry } = useForm({});
-
     const currentlyRunningTimers = timeEntries.filter((entry) => !entry.end_time);
     const finishedTimeEntries = timeEntries.filter((entry) => entry.end_time);
 
+    const { delete: deleteTimeEntry } = useForm({});
     const handleDeleteTimeEntry = (id: number) => () => {
         if (confirm('Are you sure you want to delete this time entry?')) {
             deleteTimeEntry(route('time-entries.destroy', id), {
@@ -75,7 +74,7 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
                 ) : null}
             </TimeEntryProvider>
 
-            {showAlert && (
+            {showAlert ? (
                 <div className={'px-4 pt-4'}>
                     <Alert
                         className={'relative'}
@@ -88,7 +87,7 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
                         <AlertDescription>{flash.message}</AlertDescription>
                     </Alert>
                 </div>
-            )}
+            ) : null}
 
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl px-4 py-4">
                 <Table>
