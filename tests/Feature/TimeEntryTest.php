@@ -34,7 +34,7 @@ describe('authenticated users', function () {
             );
     });
 
-    it('should create a task when no task_id is set', function () {
+    it('should create a task when no task_id is set and does not show alert', function () {
         $category = Category::factory()->create();
 
         $startTime = now()->subHours(1)->format('H:i:s');
@@ -51,7 +51,7 @@ describe('authenticated users', function () {
             ->assertRedirectToRoute('time-entries.index', [
                 'time_entry_id' => 1,
             ])
-            ->assertSessionHas('message-type', 'success');
+            ->assertSessionMissing('message-type');
 
         $this->assertDatabaseHas('tasks', [
             'user_id' => $this->user->id,
@@ -67,7 +67,7 @@ describe('authenticated users', function () {
     });
 
     describe('when creating in timer mode', function () {
-        it('allows null end_time', function () {
+        it('allows null end_time and does not show alert', function () {
             $task = Task::factory()->create([
                 'user_id' => $this->user->id,
             ]);
@@ -86,7 +86,7 @@ describe('authenticated users', function () {
                 ->assertRedirectToRoute('time-entries.index', [
                     'time_entry_id' => 1,
                 ])
-                ->assertSessionHas('message-type', 'success');
+                ->assertSessionMissing('message-type');
 
             $this->assertDatabaseHas('time_entries', [
                 'user_id' => $this->user->id,
@@ -247,7 +247,8 @@ describe('authenticated users', function () {
                 'end_time' => $endTime,
                 'task_title' => $task->title,
                 'category_id' => $task->category_id,
-            ])->assertJsonValidationErrors('end_time');
+            ])
+                ->assertJsonValidationErrors('end_time');
         });
 
         it('should update task information correctly', function () {
@@ -287,7 +288,8 @@ describe('authenticated users', function () {
                 'task_title' => $task->title,
                 'category_id' => $task->category_id,
                 'end_time' => $endTime,
-            ])->assertStatus(403);
+            ])
+                ->assertSessionHas('message-type', 'destructive');
 
             $this->assertDatabaseMissing('time_entries', [
                 'id' => $timeEntry->id,

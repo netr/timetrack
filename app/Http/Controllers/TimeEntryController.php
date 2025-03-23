@@ -7,7 +7,6 @@ use App\Http\Requests\UpdateTimeEntryRequest;
 use App\Models\Task;
 use App\Models\TimeEntry;
 use DB;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
 
@@ -65,6 +64,13 @@ class TimeEntryController extends Controller
                     'end_time' => $endTime,
                 ]);
 
+                if ($request->safe()->input('mode') === 'timer') {
+                    return to_route('time-entries.index',
+                        [
+                            'time_entry_id' => $timeEntry->id,
+                        ]);
+                }
+
                 return to_route('time-entries.index',
                     [
                         'time_entry_id' => $timeEntry->id,
@@ -95,10 +101,18 @@ class TimeEntryController extends Controller
         }
     }
 
-    public function update(UpdateTimeEntryRequest $request, TimeEntry $timeEntry): JsonResponse
+    public function update(UpdateTimeEntryRequest $request, TimeEntry $timeEntry): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
     {
         if ($request->user()->cannot('update', $timeEntry)) {
-            return response()->json(['message' => 'You are not authorized to update this time entry'], 403);
+            Log::info('User not allowed to update this time entry', [
+                'user_id' => auth()->id(),
+                'time_entry_user_id' => $timeEntry->user_id,
+                'time_entry_id' => $timeEntry->id,
+            ]);
+
+            return to_route('time-entries.index')
+                ->with('message', 'You are not authorized to update this time entry')
+                ->with('message-type', 'destructive');
         }
 
         $validated = $request->validated();
@@ -120,13 +134,18 @@ class TimeEntryController extends Controller
             'category_id' => $validated['category_id'],
         ]);
 
-        return response()->json(['message' => 'Time entry updated successfully'], 200);
+        return to_route('time-entries.index',
+            [
+                'time_entry_id' => $timeEntry->id,
+            ])
+            ->with('message', 'Time entry updated successfully')
+            ->with('message-type', 'success');
     }
 
     public function destroy(Request $request, TimeEntry $timeEntry): \Illuminate\Http\RedirectResponse
     {
         if ($request->user()->cannot('delete', $timeEntry)) {
-            Log::info('User not allowed to delete time entry', [
+            Log::info('User not allowed to delete this time entry', [
                 'user_id' => auth()->id(),
                 'time_entry_user_id' => $timeEntry->user_id,
                 'time_entry_id' => $timeEntry->id,
