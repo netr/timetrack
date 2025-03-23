@@ -16,7 +16,7 @@ const categories = ['Development', 'Design', 'Meeting', 'Research', 'Documentati
 export const CreateTimeEntryForm = () => {
     const [timeEntryMode, setTimeEntryMode] = useState<'manual' | 'timer'>('manual');
     const taskNameInput = useRef<HTMLInputElement>(null);
-    const { form } = useTimeEntryForm();
+    const { form, isTimeRangeValid, hasTimeFields } = useTimeEntryForm();
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -41,9 +41,6 @@ export const CreateTimeEntryForm = () => {
         },
         [form],
     );
-
-    const isEndTimeInvalid = form.data.end_time && form.data.start_time && form.data.end_time < form.data.start_time;
-    const isStartTimeInvalid = form.data.start_time && form.data.end_time && form.data.start_time > form.data.end_time;
 
     return (
         <div>
@@ -102,8 +99,7 @@ export const CreateTimeEntryForm = () => {
                             <Button
                                 disabled={
                                     form.processing ||
-                                    isEndTimeInvalid ||
-                                    isStartTimeInvalid ||
+                                    (!isTimeRangeValid && hasTimeFields) ||
                                     !form.data.task_title ||
                                     !form.data.start_time ||
                                     !form.data.end_time ||

@@ -18,6 +18,8 @@ interface TimeEntryFormProviderProps {
 
 interface TimeEntryFormContextProps {
     form: InertiaFormProps<TimeEntryFormData>;
+    hasTimeFields: boolean;
+    isTimeRangeValid: boolean;
 }
 
 const TimeEntryFormContext = createContext<TimeEntryFormContextProps | undefined>(undefined);
@@ -42,5 +44,8 @@ export const TimeEntryProvider: React.FC<TimeEntryFormProviderProps> = ({ childr
         mode: 'manual',
     });
 
-    return <TimeEntryFormContext.Provider value={{ form }}>{children}</TimeEntryFormContext.Provider>;
+    const hasTimeFields = form.data.start_time !== '' && form.data.end_time !== '';
+    const isTimeRangeValid = hasTimeFields ? form.data.end_time > form.data.start_time : true;
+
+    return <TimeEntryFormContext.Provider value={{ form, hasTimeFields, isTimeRangeValid }}>{children}</TimeEntryFormContext.Provider>;
 };
