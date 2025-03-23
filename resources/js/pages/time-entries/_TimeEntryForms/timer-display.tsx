@@ -25,6 +25,10 @@ export const TimerDisplay = ({ isRunning, startTime, className }: TimerDisplayPr
             }, 1000);
         }
 
+        if (!isRunning) {
+            setTimerValue(0);
+        }
+
         return () => {
             if (intervalId) {
                 clearInterval(intervalId);
