@@ -1,24 +1,46 @@
 'use client';
 
+import { format } from 'date-fns';
 import { Play, Square } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useCreateTimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-context';
 
 interface TimeEntryProps {
-    onStart: () => void;
     className?: string;
     saveDisabled?: boolean;
 }
 
-export function TimeEntryTimerMode({ onStart, className }: TimeEntryProps) {
+export function TimeEntryTimerMode({ className }: TimeEntryProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [timerValue, setTimerValue] = useState<number>(0);
     const [timerStart, setTimerStart] = useState<number | null>(null);
 
     const { form } = useCreateTimeEntryForm();
+
+    const handleOnStart = useCallback(() => {
+        // Check if there's enough data to submit the form
+        if (form.data.task_title) {
+            const joined = {
+                start_time: format(new Date(), 'HH:mm'),
+                date: format(new Date(), 'yyyy-MM-dd'),
+            };
+            form.transform((data) => ({ ...data, ...joined }));
+            // Trigger form submission
+            form.post(route('time-entries.store'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setTimerStart(Date.now() - timerValue);
+                    setIsRunning(true);
+                },
+                onError: (errors) => {
+                    console.log(errors);
+                },
+            });
+        }
+    }, [form, timerValue]);
 
     // Format milliseconds to duration
     const formatDuration = (ms: number) => {
@@ -51,9 +73,7 @@ export function TimeEntryTimerMode({ onStart, className }: TimeEntryProps) {
     const handleTimerToggle = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
         if (!isRunning) {
-            onStart();
-            setTimerStart(Date.now() - timerValue);
-            setIsRunning(true);
+            handleOnStart();
         } else {
             setIsRunning(false);
         }
