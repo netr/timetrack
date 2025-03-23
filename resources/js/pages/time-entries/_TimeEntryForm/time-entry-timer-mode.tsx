@@ -1,24 +1,24 @@
 'use client';
 
 import { Play, Square } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useCreateTimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-context';
 
 interface TimeEntryProps {
-    onSave: (duration: string) => void;
-    mode: 'manual' | 'timer';
-    onModeChange: (mode: 'manual' | 'timer') => void;
+    onStart: () => void;
     className?: string;
     saveDisabled?: boolean;
 }
 
-export function TimeEntryTimerMode({ mode, onModeChange, className, saveDisabled }: TimeEntryProps) {
+export function TimeEntryTimerMode({ onStart, className }: TimeEntryProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [timerValue, setTimerValue] = useState<number>(0);
     const [timerStart, setTimerStart] = useState<number | null>(null);
-    const [error, setError] = useState<string>('');
+
+    const { form } = useCreateTimeEntryForm();
 
     // Format milliseconds to duration
     const formatDuration = (ms: number) => {
@@ -47,18 +47,11 @@ export function TimeEntryTimerMode({ mode, onModeChange, className, saveDisabled
         };
     }, [isRunning, timerStart]);
 
-    useEffect(() => {
-        const newMode = mode as 'manual' | 'timer';
-        onModeChange(newMode);
-        setError('');
-        setIsRunning(false);
-        setTimerStart(null);
-        setTimerValue(0);
-    }, [mode, onModeChange]);
-
     // Handle timer start/stop
-    const handleTimerToggle = () => {
+    const handleTimerToggle = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
         if (!isRunning) {
+            onStart();
             setTimerStart(Date.now() - timerValue);
             setIsRunning(true);
         } else {
@@ -66,18 +59,18 @@ export function TimeEntryTimerMode({ mode, onModeChange, className, saveDisabled
         }
     };
 
+    const canRunTimer = form.data.task_title !== '';
+
     return (
         <div className={cn('flex flex-col gap-2', className)}>
             <div className="flex w-full items-center gap-2">
                 <div className="flex flex-1 items-center gap-2">
                     <span className="flex-1 text-center font-mono">{formatDuration(timerValue)}</span>
-                    <Button disabled={saveDisabled} onClick={handleTimerToggle} size="icon" variant="outline">
+                    <Button disabled={!canRunTimer} onClick={handleTimerToggle} size="icon" variant="outline">
                         {isRunning ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                     </Button>
                 </div>
             </div>
-
-            {error && <span className="text-xs text-red-500">{error}</span>}
         </div>
     );
 }

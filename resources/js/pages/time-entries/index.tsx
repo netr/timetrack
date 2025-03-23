@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { CreateTimeEntryProvider } from '@/pages/time-entries/_TimeEntryForm/time-entry-context';
 import { TimeEntryForm } from '@/pages/time-entries/_TimeEntryForm/time-entry-form';
 import { BreadcrumbItem } from '@/types';
 import { type SharedData } from '@/types';
@@ -66,7 +67,9 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
             )}
 
             <div className={'mx-4 mt-4 rounded-xl border p-4'}>
-                <TimeEntryForm />
+                <CreateTimeEntryProvider>
+                    <TimeEntryForm />
+                </CreateTimeEntryProvider>
             </div>
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl px-4 py-4">
                 <Table>
