@@ -17,7 +17,7 @@ describe('authenticated users', function () {
         $this->actingAs($this->user);
     });
 
-    it('can visit the time entries page', function () {
+    it('returns the users time entries correctly', function () {
         Task::factory()
             ->count(5)
             ->has(TimeEntry::factory())
@@ -33,8 +33,38 @@ describe('authenticated users', function () {
             );
     });
 
-    describe('when creating', function () {
-        it('can create new entries with a predefined task, without an end time', function () {
+    it('should create a task when no task_id is set', function () {
+        $category = Category::factory()->create();
+
+        $startTime = now()->subHours(1)->format('H:i');
+        $date = now()->toDateString();
+
+        $this->json('POST', '/time-entries', [
+            'mode' => 'timer',
+            'task_title' => 'random title',
+            'category_id' => $category->id,
+            'start_time' => $startTime,
+            'end_time' => null,
+            'date' => $date,
+        ])
+            ->assertRedirectToRoute('time-entries.index')
+            ->assertSessionHas('message-type', 'success');
+
+        $this->assertDatabaseHas('tasks', [
+            'user_id' => $this->user->id,
+            'category_id' => $category->id,
+        ]);
+
+        $this->assertDatabaseHas('time_entries', [
+            'user_id' => $this->user->id,
+            'task_id' => 1,
+            'start_time' => $date.' '.$startTime,
+            'end_time' => null,
+        ]);
+    });
+
+    describe('when creating in timer mode', function () {
+        it('allows null end_time', function () {
             $task = Task::factory()->create([
                 'user_id' => $this->user->id,
             ]);
@@ -43,6 +73,7 @@ describe('authenticated users', function () {
             $date = now()->toDateString();
 
             $this->json('POST', '/time-entries', [
+                'mode' => 'timer',
                 'task_id' => $task->id,
                 'category_id' => $task->category_id,
                 'start_time' => $startTime,
@@ -60,7 +91,29 @@ describe('authenticated users', function () {
             ]);
         });
 
-        it('can create new entries with a predefined task, with an end time', function () {
+        it('should fail when end_time is set', function () {
+            $task = Task::factory()->create([
+                'user_id' => $this->user->id,
+            ]);
+
+            $startTime = now()->subHours(1)->format('H:i');
+            $date = now()->toDateString();
+            $endTime = now()->format('H:i');
+
+            $this->json('POST', '/time-entries', [
+                'mode' => 'timer',
+                'task_id' => $task->id,
+                'category_id' => $task->category_id,
+                'start_time' => $startTime,
+                'end_time' => $endTime,
+                'date' => $date,
+            ])
+                ->assertJsonValidationErrors('end_time');
+        });
+    });
+
+    describe('when creating in manual mode', function () {
+        it('allows end_time to be set', function () {
             $task = Task::factory()->create([
                 'user_id' => $this->user->id,
             ]);
@@ -70,6 +123,7 @@ describe('authenticated users', function () {
             $endTime = now()->format('H:i');
 
             $this->json('POST', '/time-entries', [
+                'mode' => 'manual',
                 'task_id' => $task->id,
                 'category_id' => $task->category_id,
                 'start_time' => $startTime,
@@ -87,38 +141,30 @@ describe('authenticated users', function () {
             ]);
         });
 
-        it('can create new entries without a predefined task', function () {
-            $category = Category::factory()->create();
+        it('should fail with a missing end_time', function () {
+            $task = Task::factory()->create([
+                'user_id' => $this->user->id,
+            ]);
 
-            $startTime = now()->subHours(1)->format('H:i');
             $date = now()->toDateString();
+            $startTime = now()->subHours(1)->format('H:i');
+            $endTime = now()->format('H:i');
 
+            // This will fail because end_time is required
             $this->json('POST', '/time-entries', [
-                'task_title' => 'random title',
-                'category_id' => $category->id,
+                'mode' => 'manual',
+                'task_id' => $task->id,
+                'category_id' => $task->category_id,
                 'start_time' => $startTime,
                 'end_time' => null,
                 'date' => $date,
             ])
-                ->assertRedirectToRoute('time-entries.index')
-                ->assertSessionHas('message-type', 'success');
-
-            $this->assertDatabaseHas('tasks', [
-                'user_id' => $this->user->id,
-                'category_id' => $category->id,
-            ]);
-
-            $this->assertDatabaseHas('time_entries', [
-                'user_id' => $this->user->id,
-                'task_id' => 1,
-                'start_time' => $date.' '.$startTime,
-                'end_time' => null,
-            ]);
+                ->assertJsonValidationErrors('end_time');
         });
     });
 
     describe('when updating', function () {
-        it('can update an end time', function () {
+        it('should update end_time correctly', function () {
             $task = Task::factory()->create([
                 'user_id' => $this->user->id,
             ]);
@@ -129,13 +175,29 @@ describe('authenticated users', function () {
 
             $this->json('PUT', "/time-entries/{$timeEntry->id}", [
                 'end_time' => $endTime,
-                'title' => 'Test',
+                'task_title' => $task->title,
                 'category_id' => $task->category_id,
             ]);
 
             $this->assertDatabaseHas('time_entries', [
                 'id' => $timeEntry->id,
                 'end_time' => $endTime,
+            ]);
+        });
+
+        it('should update task information correctly', function () {
+            $task = Task::factory()->create([
+                'user_id' => $this->user->id,
+            ]);
+
+            $timeEntry = TimeEntry::factory()->for($task)->create();
+
+            $endTime = now()->toDateTimeString();
+
+            $this->json('PUT', "/time-entries/{$timeEntry->id}", [
+                'end_time' => $endTime,
+                'task_title' => 'Test',
+                'category_id' => $task->category_id,
             ]);
 
             $this->assertDatabaseHas('tasks', [
@@ -145,7 +207,7 @@ describe('authenticated users', function () {
             ]);
         });
 
-        it('can not update other users entries', function () {
+        it('blocks users from updating other users time entries', function () {
             $task = Task::factory()->create([
                 'user_id' => $this->user->id,
             ]);
@@ -168,7 +230,7 @@ describe('authenticated users', function () {
     });
 
     describe('when deleting', function () {
-        it('can delete their own entries', function () {
+        it('allows users to delete their own entries', function () {
             $task = Task::factory()->create([
                 'user_id' => $this->user->id,
             ]);
@@ -182,7 +244,7 @@ describe('authenticated users', function () {
             ]);
         });
 
-        it('can not delete other users entries', function () {
+        it('blocks users from deleting other users entries', function () {
             $task = Task::factory()->create([
                 'user_id' => $this->user->id,
             ]);

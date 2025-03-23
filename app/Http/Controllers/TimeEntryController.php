@@ -98,7 +98,7 @@ class TimeEntryController extends Controller
         }
 
         $request->validate([
-            'title' => 'required|string|max:255',
+            'task_title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'end_time' => 'date',
         ]);
@@ -108,7 +108,7 @@ class TimeEntryController extends Controller
         ]);
 
         $timeEntry->task()->update([
-            'title' => $request->title,
+            'title' => $request->task_title,
             'category_id' => $request->category_id,
         ]);
 
