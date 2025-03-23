@@ -9,6 +9,7 @@
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
         "test": "vitest run",
+        "test:v": "vitest run --reporter verbose",
         "test:watch": "vitest",
         "types": "tsc --noEmit"
     },
