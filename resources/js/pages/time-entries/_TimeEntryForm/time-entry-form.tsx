@@ -37,10 +37,11 @@ export const TimeEntryForm = () => {
     const handleModeChange = useCallback(
         (mode: 'manual' | 'timer') => {
             setTimeEntryMode(mode);
-            form.setData('mode', mode);
             form.reset();
+            form.clearErrors();
+            form.setData('mode', mode);
         },
-        [form.reset, form.setData],
+        [form],
     );
 
     const isEndTimeInvalid = form.data.end_time && form.data.start_time && form.data.end_time < form.data.start_time;
@@ -88,14 +89,22 @@ export const TimeEntryForm = () => {
 
                     {timeEntryMode === 'timer' && (
                         <>
-                            <TimeEntryTimerMode onStart={() => {}} />
+                            <TimeEntryTimerMode />
                         </>
                     )}
                     {timeEntryMode === 'manual' && (
                         <>
                             <TimeEntryManualMode />
                             <Button
-                                disabled={form.processing || isEndTimeInvalid || isStartTimeInvalid || !form.data.task_title || !form.data.start_time}
+                                disabled={
+                                    form.processing ||
+                                    isEndTimeInvalid ||
+                                    isStartTimeInvalid ||
+                                    !form.data.task_title ||
+                                    !form.data.start_time ||
+                                    !form.data.end_time ||
+                                    !form.data.date
+                                }
                                 type={'submit'}
                             >
                                 Save
