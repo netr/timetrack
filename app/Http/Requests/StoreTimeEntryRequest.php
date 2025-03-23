@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TimeAfterRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,6 +16,8 @@ class StoreTimeEntryRequest extends FormRequest
     public function rules(): array
     {
         $isManualMode = $this->request->get('mode') === 'manual';
+        $manualModeRules = ['required', Rule::date()->format('H:i'), new TimeAfterRule($this->request->get('start_time'))];
+        $timerModeRules = ['prohibited'];
 
         return [
             'mode' => 'required|in:timer,manual',
@@ -24,11 +27,7 @@ class StoreTimeEntryRequest extends FormRequest
             'date' => 'required|date',
             'start_time' => ['required', Rule::date()->format('H:i')],
             'end_time' => [
-                Rule::when(
-                    $isManualMode,
-                    ['required', Rule::date()->format('H:i')],
-                    ['prohibited']
-                ),
+                Rule::when($isManualMode, $manualModeRules, $timerModeRules),
             ],
         ];
     }

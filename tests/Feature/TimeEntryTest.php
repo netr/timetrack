@@ -161,6 +161,28 @@ describe('authenticated users', function () {
             ])
                 ->assertJsonValidationErrors('end_time');
         });
+
+        it('should fail when end_time < start_time', function () {
+            $task = Task::factory()->create([
+                'user_id' => $this->user->id,
+            ]);
+
+            $date = now()->toDateString();
+            $startTime = now()->startOfDay()->addHour()->format('H:i');
+            $endTime = now()->startOfDay()->format('H:i');
+
+            // This will fail because end_time is required
+            $this->json('POST', '/time-entries', [
+                'mode' => 'manual',
+                'task_id' => $task->id,
+                'category_id' => $task->category_id,
+                'start_time' => $startTime,
+                'end_time' => $endTime,
+                'date' => $date,
+            ])
+                ->dump()
+                ->assertJsonValidationErrors('end_time');
+        });
     });
 
     describe('when updating', function () {
