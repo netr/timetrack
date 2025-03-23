@@ -10,7 +10,7 @@ import { TimeEntryProvider } from '@/pages/time-entries/_TimeEntryForms/time-ent
 import TimeEntriesTable from '@/pages/time-entries/_TimeEntryTable/time-entries-table';
 import { BreadcrumbItem } from '@/types';
 import { type SharedData } from '@/types';
-import { TimeEntry } from '@/types/tasks';
+import { Task, TimeEntry } from '@/types/tasks';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -23,7 +23,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] }) {
+export default function TimeEntries({ timeEntries, tasks }: { timeEntries: TimeEntry[]; tasks: Task[] }) {
     const { flash } = usePage<SharedData>().props;
     const [showAlert, setShowAlert] = useState(false);
 
@@ -58,7 +58,7 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
 
                 {timeEntriesWithActiveTimers.length === 0 ? (
                     <div className={'mx-4 mt-4 rounded-xl border p-4'}>
-                        <CreateTimeEntryForm />
+                        <CreateTimeEntryForm tasks={tasks} />
                     </div>
                 ) : null}
             </TimeEntryProvider>

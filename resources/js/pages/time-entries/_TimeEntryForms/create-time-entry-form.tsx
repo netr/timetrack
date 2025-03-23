@@ -10,10 +10,11 @@ import { StartTimerModeButton } from '@/pages/time-entries/_TimeEntryForms/start
 import { TimeAndDatePicker } from '@/pages/time-entries/_TimeEntryForms/time-and-date-picker';
 import { useTimeEntryForm } from '@/pages/time-entries/_TimeEntryForms/time-entry-form-context';
 import { TimerDisplay } from '@/pages/time-entries/_TimeEntryForms/timer-display';
+import { Task } from '@/types/tasks';
 
 const categories = ['Development', 'Design', 'Meeting', 'Research', 'Documentation', 'Other'];
 
-export const CreateTimeEntryForm = () => {
+export const CreateTimeEntryForm = ({ tasks }: { tasks: Task[] }) => {
     const [timeEntryMode, setTimeEntryMode] = useState<'manual' | 'timer'>('manual');
     const taskNameInput = useRef<HTMLInputElement>(null);
     const { form, isTimeRangeValid, hasTimeFields } = useTimeEntryForm();
