@@ -57,10 +57,10 @@ export default function TimeEntries({ timeEntries }: { timeEntries: TimeEntry[] 
                         className={'relative'}
                         onClose={handleHideAlert}
                         showCloseButton
-                        variant={flash.type.toString() as 'default' | 'success' | 'destructive'}
+                        variant={flash.type ? (flash.type.toString() as 'default' | 'success' | 'destructive') : 'default'}
                     >
                         <CheckIcon className="h-4 w-4" />
-                        <AlertTitle className={'uppercase'}>{flash.type.toString()}</AlertTitle>
+                        <AlertTitle className={'uppercase'}>{flash.type ? flash.type.toString() : ''}</AlertTitle>
                         <AlertDescription>{flash.message}</AlertDescription>
                     </Alert>
                 </div>
