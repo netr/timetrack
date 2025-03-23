@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTimeEntryRequest;
+use App\Http\Requests\UpdateTimeEntryRequest;
 use App\Models\Task;
 use App\Models\TimeEntry;
 use DB;
@@ -91,25 +92,29 @@ class TimeEntryController extends Controller
         }
     }
 
-    public function update(Request $request, TimeEntry $timeEntry): JsonResponse
+    public function update(UpdateTimeEntryRequest $request, TimeEntry $timeEntry): JsonResponse
     {
         if ($request->user()->cannot('update', $timeEntry)) {
             return response()->json(['message' => 'You are not authorized to update this time entry'], 403);
         }
 
-        $request->validate([
-            'task_title' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'end_time' => 'date',
-        ]);
+        $validated = $request->validated();
+
+        // assert that end_time < start_time
+        if (! $timeEntry->isAfterStartTime($validated['end_time'])) {
+            return response()->json([
+                'message' => 'End time must be after start time',
+                'errors' => ['end_time' => ['End time must be after start time']],
+            ], 422);
+        }
 
         $timeEntry->update([
-            'end_time' => $request->end_time,
+            'end_time' => $validated['end_time'],
         ]);
 
         $timeEntry->task()->update([
-            'title' => $request->task_title,
-            'category_id' => $request->category_id,
+            'title' => $validated['task_title'],
+            'category_id' => $validated['category_id'],
         ]);
 
         return response()->json(['message' => 'Time entry updated successfully'], 200);

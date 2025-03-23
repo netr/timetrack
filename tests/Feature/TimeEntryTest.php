@@ -4,6 +4,7 @@ use App\Models\Category;
 use App\Models\Task;
 use App\Models\TimeEntry;
 use App\Models\User;
+use Carbon\Carbon;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
@@ -180,7 +181,6 @@ describe('authenticated users', function () {
                 'end_time' => $endTime,
                 'date' => $date,
             ])
-                ->dump()
                 ->assertJsonValidationErrors('end_time');
         });
     });
@@ -207,6 +207,23 @@ describe('authenticated users', function () {
             ]);
         });
 
+        it('should fail when end_time < start_time', function () {
+            $task = Task::factory()->create([
+                'user_id' => $this->user->id,
+            ]);
+
+            $timeEntry = TimeEntry::factory()->for($task)->create();
+
+            $startTime = Carbon::createFromDate($timeEntry->start_time);
+            $endTime = $startTime->subHour()->toDateTimeString();
+
+            $this->json('PUT', "/time-entries/{$timeEntry->id}", [
+                'end_time' => $endTime,
+                'task_title' => $task->title,
+                'category_id' => $task->category_id,
+            ])->assertJsonValidationErrors('end_time');
+        });
+
         it('should update task information correctly', function () {
             $task = Task::factory()->create([
                 'user_id' => $this->user->id,
@@ -214,13 +231,11 @@ describe('authenticated users', function () {
 
             $timeEntry = TimeEntry::factory()->for($task)->create();
 
-            $endTime = now()->toDateTimeString();
-
             $this->json('PUT', "/time-entries/{$timeEntry->id}", [
-                'end_time' => $endTime,
+                'end_time' => now()->toDateTimeString(),
                 'task_title' => 'Test',
                 'category_id' => $task->category_id,
-            ]);
+            ])->dump();
 
             $this->assertDatabaseHas('tasks', [
                 'id' => $task->id,
@@ -240,13 +255,17 @@ describe('authenticated users', function () {
 
             $this->actingAs($anotherUser);
 
+            $endTime = now()->toDateTimeString();
+
             $this->json('PUT', "/time-entries/{$timeEntry->id}", [
-                'end_time' => now()->toDateTimeString(),
+                'task_title' => $task->title,
+                'category_id' => $task->category_id,
+                'end_time' => $endTime,
             ])->assertStatus(403);
 
             $this->assertDatabaseMissing('time_entries', [
                 'id' => $timeEntry->id,
-                'end_time' => now()->toDateTimeString(),
+                'end_time' => $endTime,
             ]);
         });
     });

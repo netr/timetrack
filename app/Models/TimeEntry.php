@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -40,5 +41,15 @@ class TimeEntry extends Model
     public function task(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Task::class);
+    }
+
+    public function isAfterStartTime(string|Carbon $time): bool
+    {
+        $startTime = Carbon::createFromDate($this->start_time);
+        if ($time instanceof Carbon) {
+            return $startTime->lt($time);
+        }
+
+        return $startTime->lt(Carbon::createFromDate($time));
     }
 }
