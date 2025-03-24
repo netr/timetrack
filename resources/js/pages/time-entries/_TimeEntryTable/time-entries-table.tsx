@@ -1,4 +1,5 @@
 import { useForm } from '@inertiajs/react';
+import { format } from 'date-fns';
 import { formatDistance } from 'date-fns/formatDistance';
 import { FileEditIcon, Trash2Icon } from 'lucide-react';
 import React, { useCallback } from 'react';
@@ -30,7 +31,8 @@ const TimeEntriesTable = ({ timeEntries }: { timeEntries: TimeEntry[] }) => {
                     <TableHead className="w-[100px]">ID</TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead>Category</TableHead>
-                    <TableHead className="text-right">Time</TableHead>
+                    <TableHead className="text-right">Duration</TableHead>
+                    <TableHead className="text-right">Date</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                 </TableRow>
             </TableHeader>
@@ -41,6 +43,7 @@ const TimeEntriesTable = ({ timeEntries }: { timeEntries: TimeEntry[] }) => {
                         <TableCell>{entry.task.title}</TableCell>
                         <TableCell>{entry.task.category?.name || 'Uncategorized'}</TableCell>
                         <TableCell className="text-right">{formatDistance(entry.end_time, entry.start_time)}</TableCell>
+                        <TableCell className="text-right">{format(entry.created_at, 'E, MMM do, yyyy')}</TableCell>
                         <TableCell className={'flex justify-end gap-x-2'}>
                             <button className="cursor-pointer text-gray-500 hover:text-green-500">
                                 <FileEditIcon className={'h-4 w-4'} />{' '}
